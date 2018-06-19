@@ -74,12 +74,12 @@ sudo apt install libgtk-3-dev
 
 optimization
 ```
-sudo apt install libatlas-base-dev libopenblas-dev libeigen3-dev gfortran
+sudo apt install libatlas-base-dev libopenblas-dev libeigen3-dev gfortran libtbb2 libtbb-dev
 ```
 
 python3
 ```
-sudo apt install python3-dev python3-numpy libtbb2 libtbb-dev
+sudo apt install python3-dev python3-numpy
 ```
 
 ### 4. Download and unzip OpenCV
