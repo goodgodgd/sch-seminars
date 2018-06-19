@@ -109,7 +109,9 @@ CMAKE_INSTALL_PREFIX=~/mylib/deploy/opencv-3.4.1
 ````
 
 WITH_xxx 와 BUILD_xxx 를 통해 방대한 opencv에서 필요한 기능만 선택하는것이 중요.
-디폴트는 내가 원하는 것이 없고 모두 빌드하면 용량이 너무 커진다.
+- 디폴트는 내가 원하는 것이 없고 모두 빌드하면 용량이 너무 커진다.
+
+WITH에서는 OpenCV의 dependency 선택
 ````
 WITH_OPENNI2=ON
 WITH_OPENGL=ON
@@ -129,6 +131,7 @@ WITH_MATLAB=OFF
 WITH_CUDA=OFF
 ````
 
+BUILD에서는 OpenCV에서 사용할 기능(모듈) 선택
 ````
 BUILD_JAVA=OFF
 BUILD_opencv_java_bindings_generator=OFF
