@@ -19,18 +19,14 @@ sudo apt purge libopencv* python3-opencv
 sudo apt install build-essential cmake cmake-qt-gui unzip pkg-config
 ```
 
+### 2. qt 설치
+
 OpenGL for Qt, (필요한지 확실치 않음)
 ```
 sudo apt install mesa-common-dev libglu1-mesa-dev
 ```
 
-openGL for opencv, (필요한지 확실치 않음)
-```
-sudo apt install libgl1-mesa-dev mesa-utils libgtkglext1-dev
-```
-
-
-### 2. qt 설치
+Qt 설치
 ```
 mkdir ~/mylib; cd ~/mylib
 wget https://download.qt.io/archive/qt/5.11/5.11.0/qt-opensource-linux-x64-5.11.0.run
@@ -43,6 +39,11 @@ chmod a+x qt-opensource-linux-x64-5.11.0.run
 
 
 ### 3. OpenCV dependency 설치
+
+OpenGL for opencv, (필요한지 확실치 않음)
+```
+sudo apt install libgl1-mesa-dev mesa-utils libgtkglext1-dev
+```
 
 이미지
 ```
@@ -97,17 +98,18 @@ mkdir ~/mylib/opencv-3.4.1/build
 mkdir -p ~/mylib/deploy/opencv-3.4.1
 ````
 
-### 5. OpenCV 옵션 선
+### 5. OpenCV 옵션
 
-- CMakeCache.txt 를 보거나 cmake-gui에서 옵션을 볼 수 있음
-- 빌드 타입과 설치할 경로를 먼저 설정 
+CMakeCache.txt 를 보거나 cmake-gui에서 옵션을 볼 수 있음
+
+빌드 타입과 설치할 경로를 먼저 설정 
 ````
 CMAKE_BUILD_TYPE=Relase
 CMAKE_INSTALL_PREFIX=~/mylib/deploy/opencv-3.4.1
 ````
 
-- WITH_xxx 와 BUILD_xxx 를 통해 방대한 opencv에서 필요한 기능만 선택하는것이 중요
-- 디폴트는 내가 원하는 것이 없고 모두 빌드하면 용량이 너무 커진다.
+WITH_xxx 와 BUILD_xxx 를 통해 방대한 opencv에서 필요한 기능만 선택하는것이 중요.
+디폴트는 내가 원하는 것이 없고 모두 빌드하면 용량이 너무 커진다.
 ````
 WITH_OPENNI2=ON
 WITH_OPENGL=ON
@@ -139,7 +141,7 @@ BUILD_opencv_superres=OFF
 BUILD_opencv_ts=OFF
 ````
 
-- Qt 연결
+Qt 연결
 ````
 WITH_QT=ON
 QT_QMAKE_EXECUTABLE=~/mylib/Qt5.11.0/5.11.0/gcc_64/bin/qmake
@@ -151,8 +153,8 @@ Qt5Test_DIR=~/mylib/Qt5.11.0/5.11.0/gcc_64/lib/cmake/Qt5Test
 Qt5Widgets_DIR=~/mylib/Qt5.11.0/5.11.0/gcc_64/lib/cmake/Qt5Widgets
 ````
 
-- 외부에서 추가된 모듈인 contrib과 함께 빌드
-- contrib을 추가하면 수십개의 추가 모듈이 들어오는데 그중에 필요한 것만 골라서 빌드하자.
+외부에서 추가된 모듈인 contrib과 함께 빌드,
+contrib을 추가하면 수십개의 추가 모듈이 들어오는데 그중에 필요한 것만 골라서 빌드한다.
 
 ````
 # contrib 경로 설정
@@ -194,7 +196,7 @@ BUILD_opencv_xobjdetect=OFF
 BUILD_opencv_xphoto=OFF
 ````
 
-- 터미널에서 아래와 같이 옵션을 써도 되고 cmake-gui에서 체크하고 configure 해도 된다.
+터미널에서 아래와 같이 옵션을 써도 되고 cmake-gui에서 체크하고 configure 해도 된다.
 ````
 $ cmake \
 -D CMAKE_BUILD_TYPE=Release \
