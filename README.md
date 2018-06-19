@@ -113,8 +113,6 @@ WITH_xxx 와 BUILD_xxx 를 통해 방대한 opencv에서 필요한 기능만 선
 
 WITH에서는 OpenCV의 dependency 선택
 ````
-WITH_OPENNI2=ON
-WITH_OPENGL=ON
 # parallel computing
 WITH_IPP=ON
 BUILD_IPP_IW=ON
@@ -123,6 +121,9 @@ WITH_OPENMP=ON
 # video for linux
 WITH_V4L=ON
 WITH_LIBV4L=ON
+
+WITH_OPENNI2=ON
+WITH_OPENGL=ON
 # qt가 있으면 GTK는 굳이 필요업을듯
 WITH_GTK=OFF
 WITH_VTK=OFF
