@@ -2,7 +2,7 @@
 
 ### Week1. OpenCV 설치
 Ubuntu, cmake, Qt, Eigen, OpenCV 설치
-[링크](https://github.com/goodgodgd/sch-cvss-2018)
+[링크](https://github.com/goodgodgd/sch-cvss-2018/tree/master/Week1)
 
 ### Week2. 기본 사용법
 Opencv 간단한 Mat 사용법: 생성, 파일읽기, 파일쓰기, 보여주기, 픽셀 수정
