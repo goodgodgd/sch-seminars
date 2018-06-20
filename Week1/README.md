@@ -19,11 +19,6 @@ sudo apt install build-essential cmake cmake-qt-gui unzip pkg-config
 
 ### 2. qt 설치
 
-OpenGL for Qt, (필요한지 확실치 않음)
-```
-sudo apt install mesa-common-dev libglu1-mesa-dev
-```
-
 Qt 설치
 ```
 mkdir ~/mylib; cd ~/mylib
