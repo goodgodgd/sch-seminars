@@ -5,17 +5,15 @@ Ubuntu, cmake, Qt, Eigen, OpenCV 설치
 [링크](https://github.com/goodgodgd/sch-cvss-2018/tree/master/Week1)
 
 ### Week2. 기본 사용법
-Opencv 간단한 Mat 사용법: 생성, 파일읽기, 파일쓰기, 보여주기, 픽셀 수정
-Eigen 사용법: 생성, 수정, 연산
-간단한 git 사용법
+- Opencv 간단한 Mat 사용법: 생성, 파일읽기, 파일쓰기, 보여주기, 픽셀 수정
+- Eigen 사용법: 생성, 수정, 연산
+- 간단한 git 사용법
 
 ### Week3. 카메라 모델
-pin hole camera model, intrinsic parameter, 
-camera calibration (체스보드 샘플영상만 갖고해봐)
+pin hole camera model, intrinsic parameter, camera calibration
 
 ### Week4. Transformation
-다양한 transformation 종류
-rigid transformation 응용, pose 클래스 만들어보기
+다양한 transformation 종류, rigid transformation 응용, pose 클래스 만들어보기
 
 ### Week5. 필터 (feat. Qt)
 이미지 필터, 엣지 프로그램 만들기
