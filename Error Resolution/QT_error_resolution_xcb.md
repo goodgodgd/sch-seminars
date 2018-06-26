@@ -1,6 +1,6 @@
 # QT error resolution
 
-###- Error code
+### - Error code
 ```
 qt.qpa.plugin: Could not find the Qt platform plugin "xcb" in ""
 ```
