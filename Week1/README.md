@@ -30,7 +30,6 @@ chmod a+x qt-opensource-linux-x64-5.11.0.run
 - qtcreator 실행하면 플러그인 오류 메시지 나타남
 - qtcreator - Help - About Plugins - QtQuick - QmlDesigner, QmlProfiler 두 개 체크해제
 
-
 ### 3. OpenCV dependency 설치
 
 OpenGL for opencv, (필요한지 확실치 않음)
