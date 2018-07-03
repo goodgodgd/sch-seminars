@@ -177,6 +177,36 @@ sudo sh -c "echo '/usr/local/cuda-8.0/lib64' >> /etc/ld.so.conf.d/nvidia.conf"
 sudo ldconfig
 ```
 
+`bazel build` command builds sources in `bazel_bin` and create a script named `build_pip_package`  
+Build python installer (.whl file) with `build_pip_package` and install it
+```
+bazel-bin/tensorflow/tools/pip_package/build_pip_package tensorflow_pkg
+pip install tensorflow_pkg/tensorflow*.whl
+```
+
+### Step 7. Verify Tensorflow installation and clean build files
+
+Run in terminal
+```
+python
+
+import tensorflow as tf
+hello = tf.constant('Hello, TensorFlow!')
+sess = tf.Session()
+print(sess.run(hello))
+```
+
+If no error occurs, tensorflow was successfully installed. 
+Now remove build files which are about 8Gb in my case.
+```
+bazel clean
+```
+If you want to reinstall tensorflow with the same configuration, command again
+```
+pip install tensorflow_pkg/tensorflow*.whl
+```
+
+
 ### References
 1. [How to install Tensorflow + CUDA 9.1 into Ubuntu 18.04](https://medium.com/@asmello/how-to-install-tensorflow-cuda-9-1-into-ubuntu-18-04-b645e769f01d)
 1. [How to Install Tensorflow GPU with CUDA 9.2 for Python on Ubuntu](https://hk.saowen.com/a/a9cc5b7c90a6f350850d8554c018f7415981fc8d470b481c90afd7573f5e12cd)
