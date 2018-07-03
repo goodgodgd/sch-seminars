@@ -182,3 +182,5 @@ sudo ldconfig
 1. [How to Install Tensorflow GPU with CUDA 9.2 for Python on Ubuntu](https://hk.saowen.com/a/a9cc5b7c90a6f350850d8554c018f7415981fc8d470b481c90afd7573f5e12cd)
 1. [텐서플로우 컴파일 설정 내용](https://hiseon.me/2018/03/17/tensorflow-build-config/)
 1. To check compute capability of your GPU: https://developer.nvidia.com/cuda-gpus
+
+
