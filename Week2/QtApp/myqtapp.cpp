@@ -3,8 +3,7 @@
 
 #include <QFileDialog>
 #include <QDebug>
-#include "paramparser.h"
-#include "circledrawer.h"
+
 
 MyQtApp::MyQtApp(QWidget *parent) :
     QMainWindow(parent),
@@ -94,6 +93,7 @@ void MyQtApp::on_pushButton_drawcircle_clicked()
         ParamParser parser(params);
         CircleDrawer circle(parser.getParams());
         circle.draw(image);
+        cv::imshow("image", image);
     }
     catch (ParsingException& exception) {
         qDebug() << "parsing exception" << exception.msg;
@@ -106,18 +106,19 @@ void MyQtApp::on_pushButton_drawcircle_clicked()
 // object oriented programming!!
 void MyQtApp::on_pushButton_draw_circle_objects_clicked()
 {
-    static std::vector<CircleDrawer> circles;
     try {
-        QString paramString = ui->lineEdit_imagesize->text();
-        cv::Mat image = createImage(paramString);
-
         QString params = ui->lineEdit_circleparams->text();
         ParamParser parser(params);
         CircleDrawer circle(parser.getParams());
-
         circles.push_back(circle);
+
+        qDebug() << "now there are" << circles.size() << "circles";
+
+        image.setTo(cv::Scalar(255,255,255));
+        // study point: c++11 new for loop style
         for(auto& circle: circles)
             circle.draw(image);
+        cv::imshow("image", image);
     }
     catch (ParsingException& exception) {
         qDebug() << "parsing exception" << exception.msg;
@@ -125,5 +126,27 @@ void MyQtApp::on_pushButton_draw_circle_objects_clicked()
     catch (CircleException& exception) {
         qDebug() << "circle exception" << exception.msg;
     }
+}
 
+void MyQtApp::on_pushButton_undo_circle_clicked()
+{
+    try {
+        if(circles.size()==0)
+            throw CircleException("no circle to draw");
+        circles.pop_back();
+
+        qDebug() << "now there are" << circles.size() << "circles";
+
+        image.setTo(cv::Scalar(255,255,255));
+        // study point: c++11 new for loop style
+        for(auto& circle: circles)
+            circle.draw(image);
+        cv::imshow("image", image);
+    }
+    catch (ParsingException& exception) {
+        qDebug() << "parsing exception" << exception.msg;
+    }
+    catch (CircleException& exception) {
+        qDebug() << "circle exception" << exception.msg;
+    }
 }

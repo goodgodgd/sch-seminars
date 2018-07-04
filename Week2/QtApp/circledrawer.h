@@ -29,7 +29,6 @@ public:
             throw CircleException("input image is emtpy");
         cv::circle(image, cv::Point(params[0], params[1]), params[2], CV_RGB(0,0,0));
         image.at<cv::Vec3b>(params[0], params[1]) = cv::Vec3b(0,0,0);
-        cv::imshow("image", image);
     }
 
 private:

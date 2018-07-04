@@ -24,7 +24,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 ## study point: c++11 ??
 # enable c++11
-CONFIG += c++11
+CONFIG += c++14
 
 # equivalent to #define PRJ_PATH path/to/QtApp.pro
 DEFINES += PRJ_PATH=\\\"$$PWD\\\"
@@ -60,7 +60,8 @@ SOURCES += \
 HEADERS += \
         myqtapp.h \
     circledrawer.h \
-    paramparser.h
+    paramparser.h \
+    multicircledrawer.h
 
 FORMS += \
         myqtapp.ui
