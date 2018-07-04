@@ -4,6 +4,8 @@
 #include <QFileDialog>
 #include <QDebug>
 
+#define USE_FUNCTIONAL
+
 
 MyQtApp::MyQtApp(QWidget *parent) :
     QMainWindow(parent),
@@ -103,38 +105,28 @@ void MyQtApp::on_pushButton_drawcircle_clicked()
     }
 }
 
-// object oriented programming!!
+
+// study point: c++ functional, please read
+// https://en.cppreference.com/w/cpp/utility/functional/function
+#include <functional>
+
 void MyQtApp::on_pushButton_draw_circle_objects_clicked()
 {
-    try {
-        QString params = ui->lineEdit_circleparams->text();
-        ParamParser parser(params);
-        CircleDrawer circle(parser.getParams());
-        circles.push_back(circle);
-
-        qDebug() << "now there are" << circles.size() << "circles";
-
-        image.setTo(cv::Scalar(255,255,255));
-        // study point: c++11 new for loop style
-        for(auto& circle: circles)
-            circle.draw(image);
-        cv::imshow("image", image);
-    }
-    catch (ParsingException& exception) {
-        qDebug() << "parsing exception" << exception.msg;
-    }
-    catch (CircleException& exception) {
-        qDebug() << "circle exception" << exception.msg;
-    }
+    auto func = std::bind(&MyQtApp::addCircle, this, ui->lineEdit_circleparams->text());
+    drawCircle(func);
 }
 
 void MyQtApp::on_pushButton_undo_circle_clicked()
 {
-    try {
-        if(circles.size()==0)
-            throw CircleException("no circle to draw");
-        circles.pop_back();
+    auto func = [&](){ if(circles.size()==0) throw CircleException("no circle to draw");
+                      circles.pop_back(); };
+    drawCircle(func);
+}
 
+void MyQtApp::drawCircle(auto& func)
+{
+    try {
+        func();
         qDebug() << "now there are" << circles.size() << "circles";
 
         image.setTo(cv::Scalar(255,255,255));
@@ -150,3 +142,11 @@ void MyQtApp::on_pushButton_undo_circle_clicked()
         qDebug() << "circle exception" << exception.msg;
     }
 }
+
+void MyQtApp::addCircle(QString params)
+{
+    ParamParser parser(params);
+    CircleDrawer circle(parser.getParams());
+    circles.push_back(circle);
+}
+
