@@ -59,9 +59,9 @@ SOURCES += \
 
 HEADERS += \
         myqtapp.h \
-    circledrawer.h \
+    shapedrawer.h \
     paramparser.h \
-    multicircledrawer.h
+    multishapedrawer.h
 
 FORMS += \
         myqtapp.ui

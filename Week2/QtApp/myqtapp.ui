@@ -100,25 +100,38 @@
       <rect>
        <x>10</x>
        <y>200</y>
-       <width>121</width>
+       <width>101</width>
        <height>25</height>
       </rect>
      </property>
      <property name="text">
-      <string>Draw circle objs</string>
+      <string>Draw circle</string>
      </property>
     </widget>
     <widget class="QPushButton" name="pushButton_undo_circle">
      <property name="geometry">
       <rect>
-       <x>140</x>
-       <y>200</y>
+       <x>10</x>
+       <y>260</y>
        <width>89</width>
        <height>25</height>
       </rect>
      </property>
      <property name="text">
       <string>Undo(&amp;z)</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_draw_rect_objects">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>200</y>
+       <width>101</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Draw rect</string>
      </property>
     </widget>
    </widget>

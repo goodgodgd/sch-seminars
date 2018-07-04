@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include <opencv2/opencv.hpp>
 #include <QString>
-#include "multicircledrawer.h"
+#include "multishapedrawer.h"
 
 namespace Ui {
 class MyQtApp;
@@ -25,11 +25,13 @@ private slots:
     void on_pushButton_writeimage_clicked();
     void on_pushButton_undo_circle_clicked();
 
+    void on_pushButton_draw_rect_objects_clicked();
+
 private:
     QString defaultPath;
     Ui::MyQtApp *ui;
     cv::Mat image;
-    MultiCircleDrawer drawer;
+    MultiShapeDrawer drawer;
 };
 
 #endif // MYQTAPP_H

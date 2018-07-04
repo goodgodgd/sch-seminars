@@ -1,16 +1,16 @@
-#ifndef MULTICIRCLEDRAWER_H
-#define MULTICIRCLEDRAWER_H
+#ifndef MULTISHAPEDRAWER_H
+#define MULTISHAPEDRAWER_H
 
 // study point: c++ functional, please read
 // https://en.cppreference.com/w/cpp/utility/functional/function
 #include <functional>
 #include "paramparser.h"
-#include "circledrawer.h"
+#include "shapedrawer.h"
 
-class MultiCircleDrawer
+class MultiShapeDrawer
 {
 public:
-    MultiCircleDrawer() {}
+    MultiShapeDrawer() {}
 
     void initImage(QString params)
     {
@@ -25,15 +25,21 @@ public:
 
     void pushCircle(QString params)
     {
-        auto func = std::bind(&MultiCircleDrawer::addCircle, this, params);
-        drawCircle(func);
+        auto func = std::bind(&MultiShapeDrawer::addCircle, this, params);
+        drawShapes(func);
     }
 
-    void popCircle()
+    void pushRect(QString params)
     {
-        auto func = [&](){ if(circles.size()==0) throw CircleException("no circle to draw");
-                          circles.pop_back(); };
-        drawCircle(func);
+        auto func = std::bind(&MultiShapeDrawer::addRect, this, params);
+        drawShapes(func);
+    }
+
+    void popShape()
+    {
+        auto func = [&](){ if(shapes.size()==0) throw ShapeException("no circle to draw");
+                          shapes.pop_back(); };
+        drawShapes(func);
     }
 
 private:
@@ -50,22 +56,22 @@ private:
         return image;
     }
 
-    void drawCircle(auto& func)
+    void drawShapes(auto& func)
     {
         try {
             func();
-            qDebug() << "now there are" << circles.size() << "circles";
+            qDebug() << "now there are" << shapes.size() << "shapes";
 
             image.setTo(cv::Scalar(255,255,255));
             // study point: c++11 new for loop style
-            for(auto& circle: circles)
-                circle.draw(image);
+            for(ShapeDrawer* shape: shapes)
+                shape->draw(image);
             cv::imshow("image", image);
         }
         catch (ParsingException& exception) {
             qDebug() << "parsing exception" << exception.msg;
         }
-        catch (CircleException& exception) {
+        catch (ShapeException& exception) {
             qDebug() << "circle exception" << exception.msg;
         }
     }
@@ -73,15 +79,22 @@ private:
     void addCircle(QString params)
     {
         ParamParser parser(params);
-        CircleDrawer circle(parser.getParams());
-        circles.push_back(circle);
+        ShapeDrawer* circle = new CircleDrawer(parser.getParams());
+        shapes.push_back(circle);
     }
 
-    cv::Mat image;
-    std::list<CircleDrawer> circles;
+    void addRect(QString params)
+    {
+        ParamParser parser(params);
+        ShapeDrawer* rect = new RectDrawer(parser.getParams());
+        shapes.push_back(rect);
+    }
 
+
+    cv::Mat image;
+    std::list<ShapeDrawer*> shapes;
 };
 
 
 
-#endif // MULTICIRCLEDRAWER_H
+#endif // MULTISHAPEDRAWER_H

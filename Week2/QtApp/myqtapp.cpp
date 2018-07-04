@@ -74,5 +74,10 @@ void MyQtApp::on_pushButton_draw_circle_objects_clicked()
 
 void MyQtApp::on_pushButton_undo_circle_clicked()
 {
-    drawer.popCircle();
+    drawer.popShape();
+}
+
+void MyQtApp::on_pushButton_draw_rect_objects_clicked()
+{
+    drawer.pushRect(ui->lineEdit_circleparams->text());
 }
