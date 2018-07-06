@@ -18,8 +18,7 @@ class ParamParser
 public:
     /// study point: const QString& ?? why??
     ParamParser(const QString& stringParams)
-    {
-        parseParams(stringParams);
+    {        parseParams(stringParams);
 //        parseParams_withExceptoin(stringParams);
     }
 
