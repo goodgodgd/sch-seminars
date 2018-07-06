@@ -4,6 +4,8 @@
 #include <QFileDialog>
 #include <QDebug>
 
+#define USE_FUNCTIONAL
+
 
 MyQtApp::MyQtApp(QWidget *parent) :
     QMainWindow(parent),
@@ -62,91 +64,20 @@ void MyQtApp::on_pushButton_writeimage_clicked()
 
 void MyQtApp::on_pushButton_resetimage_clicked()
 {
-    try {
-        QString paramString = ui->lineEdit_imagesize->text();
-        image = createImage(paramString);
-        cv::imshow("image", image);
-
-    }
-    catch (ParsingException& exception) {
-        qDebug() << "parsing exception" << exception.msg;
-    }
+    drawer.initImage(ui->lineEdit_imagesize->text());
 }
 
-cv::Mat MyQtApp::createImage(const QString& paramString)
-{
-    ParamParser parser(paramString);
-    // study point: auto??
-    auto& params = parser.getParams();
-    if(params.size() != 2)
-        throw ParsingException("reset image needs two parameters");
-
-    cv::Mat image = cv::Mat(params[1], params[0], CV_8UC3);
-    image.setTo(cv::Scalar(255,255,255));
-    return image;
-}
-
-void MyQtApp::on_pushButton_drawcircle_clicked()
-{
-    try {
-        QString params = ui->lineEdit_circleparams->text();
-        ParamParser parser(params);
-        CircleDrawer circle(parser.getParams());
-        circle.draw(image);
-        cv::imshow("image", image);
-    }
-    catch (ParsingException& exception) {
-        qDebug() << "parsing exception" << exception.msg;
-    }
-    catch (CircleException& exception) {
-        qDebug() << "circle exception" << exception.msg;
-    }
-}
-
-// object oriented programming!!
 void MyQtApp::on_pushButton_draw_circle_objects_clicked()
 {
-    try {
-        QString params = ui->lineEdit_circleparams->text();
-        ParamParser parser(params);
-        CircleDrawer circle(parser.getParams());
-        circles.push_back(circle);
-
-        qDebug() << "now there are" << circles.size() << "circles";
-
-        image.setTo(cv::Scalar(255,255,255));
-        // study point: c++11 new for loop style
-        for(auto& circle: circles)
-            circle.draw(image);
-        cv::imshow("image", image);
-    }
-    catch (ParsingException& exception) {
-        qDebug() << "parsing exception" << exception.msg;
-    }
-    catch (CircleException& exception) {
-        qDebug() << "circle exception" << exception.msg;
-    }
+    drawer.pushCircle(ui->lineEdit_circleparams->text());
 }
 
 void MyQtApp::on_pushButton_undo_circle_clicked()
 {
-    try {
-        if(circles.size()==0)
-            throw CircleException("no circle to draw");
-        circles.pop_back();
+    drawer.popShape();
+}
 
-        qDebug() << "now there are" << circles.size() << "circles";
-
-        image.setTo(cv::Scalar(255,255,255));
-        // study point: c++11 new for loop style
-        for(auto& circle: circles)
-            circle.draw(image);
-        cv::imshow("image", image);
-    }
-    catch (ParsingException& exception) {
-        qDebug() << "parsing exception" << exception.msg;
-    }
-    catch (CircleException& exception) {
-        qDebug() << "circle exception" << exception.msg;
-    }
+void MyQtApp::on_pushButton_draw_rect_objects_clicked()
+{
+    drawer.pushRect(ui->lineEdit_circleparams->text());
 }
