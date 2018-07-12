@@ -39,9 +39,40 @@ sudo apt install libgflags-dev libgoogle-glog-dev liblmdb-dev
 Set following variables in cmake-gui 
 ```
 CMAKE_BUILD_TYPE=Release
-CMAKE_ISNTALL_PREFIX=[your HOME]/mylib/deploy/caffe
-OpenCV_DIR=[your HOME]/mylib/deploy/opencv-3.4.1/share/OpenCV
+CMAKE_ISNTALL_PREFIX=$HOME/mylib/deploy/caffe
+OpenCV_DIR=$HOME/mylib/deploy/opencv-3.4.1/share/OpenCV
 Boost_PYTHON_LIBRARY_DEBUG=/usr/lib/x86_64-linux-gnu/libboost_python-py27.so.1.65.1
 Boost_PYTHON_LIBRARY_RELEASE=/usr/lib/x86_64-linux-gnu/libboost_python-py27.so.1.65.1
 ```  
 configure - generate - make - make install
+
+### Step5. Install pycaffe
+
+1. Environment variable setup
+    Now caffe library is installed in $HOME/mylib/deploy/caffe
+    Add following lines at the end of `.bashrc`
+    ```
+    export LD_LIBRARY_PATH=$HOME/mylib/deploy/caffe-dvof/lib${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
+    export PYTHONPATH=$HOME/mylib/deploy/caffe-dvof/python${PYTHONPATH:+:${PYTHONPATH}}
+    ```
+2. Create virutal env for python
+    To manage python packages, install pipenv and create a new virtual env in the project folder.
+    ```bash
+    cd $PROJECT_DIR
+    pip install pipenv
+    pipenv --python=python2
+    ```
+3. Install dependencies
+    Then activate virtual env and install dependent packages
+    ```bash
+    pipenv shell
+    pipenv install scikit-image lmdb protobuf
+    exit
+    ```  
+4. Check installation
+    ```bash
+    python
+    import caffe
+    ```
+    If no error occurs, installation was successful.  
+    Otherwise, install additional dependencies according to error messages.
