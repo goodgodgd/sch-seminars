@@ -10,6 +10,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = Qt3DViewer
 TEMPLATE = app
+CONFIG += c++11
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
@@ -29,19 +30,21 @@ DEFINES += ProjectPath=\\\"$$PWD\\\"
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    Share/glvertexmanager.cpp \
-    Share/glwidget.cpp
+    Modules/glvertexmanager.cpp \
+    Modules/glwidget.cpp
 
 HEADERS += \
         mainwindow.h \
-    Share/glvertexmanager.h \
-    Share/glwidget.h \
-    Share/pose6dof.h \
-    Share/project_common.h
+    Modules/glvertexmanager.h \
+    Modules/glwidget.h \
+    Modules/pose6dof.h \
+    Modules/project_common.h \
+    Modules/car.h \
+    Modules/pose6dofqt.h
 
 FORMS += \
         mainwindow.ui
 
 DISTFILES += \
-    Share/fragment.frag \
-    Share/vertex.vert
+    Modules/fragment.frag \
+    Modules/vertex.vert

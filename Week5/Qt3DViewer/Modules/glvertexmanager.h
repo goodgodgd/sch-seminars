@@ -3,7 +3,7 @@
 
 #include <QOpenGLWidget>
 #include <QVector3D>
-#include "Share/project_common.h"
+#include "Modules/project_common.h"
 
 namespace VertexType
 {

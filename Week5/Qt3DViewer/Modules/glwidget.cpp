@@ -4,28 +4,36 @@
 GlWidget::GlWidget(QWidget *parent) :
     QOpenGLWidget(parent)
 {
-    lightpos = QVector3D(0, 0, 3);
-    rot_default.setVector(0, 0, 0.01);
-    rot_default.setScalar(1);
-    rot_default.normalize();
-    trn_default = QVector3D(0, 0, -1);
+    lightpos = QVector3D(0,0,3);
     rot_radius = 0.1f;
-
     projection.setToIdentity();
     projection.perspective(45, 4.f/3.f, 0.1f, 100.f);
 
-    viewPose.setToIdentity();
-    viewPose.translate(trn_default);
-    viewPose.rotate(rot_default);
+    // determine default rotation and translation in advance
+//    rot_default.setVector(0, 0, 0.01);
+//    rot_default.setScalar(1);
+//    rot_default.normalize();
+//    trn_default = QVector3D(0, 0, -1);
+//    viewPose.setToIdentity();
+//    viewPose.translate(trn_default);
+//    viewPose.rotate(rot_default);
+
+    defaultPose = QMatrix4x4(    0.873826,  0.003236,  0.48622, -0.649472
+                                ,0.015838, -0.999637, -0.02180,  0.148617
+                                ,0.485981,  0.026758, -0.87356,  1.47186
+                                ,0       ,  0       ,  0      ,  1);
+    viewPose = defaultPose;
 
     setFocusPolicy(Qt::StrongFocus);
 }
 
 void GlWidget::ResetView()
 {
-    viewPose.setToIdentity();
-    viewPose.translate(trn_default);
-    viewPose.rotate(rot_default);
+//    viewPose.setToIdentity();
+//    viewPose.translate(trn_default);
+//    viewPose.rotate(rot_default);
+
+    viewPose = defaultPose;
 }
 
 void GlWidget::initializeGL()
@@ -34,8 +42,8 @@ void GlWidget::initializeGL()
     glClearColor(0,0,0,1);
 
     // link shaders
-    program.addShaderFromSourceFile(QOpenGLShader::Vertex, QString(ProjectPath) + "/Share/vertex.vert");
-    program.addShaderFromSourceFile(QOpenGLShader::Fragment, QString(ProjectPath) + "/Share/fragment.frag");
+    program.addShaderFromSourceFile(QOpenGLShader::Vertex, QString(ProjectPath) + "/Modules/vertex.vert");
+    program.addShaderFromSourceFile(QOpenGLShader::Fragment, QString(ProjectPath) + "/Modules/fragment.frag");
     program.bindAttributeLocation("vertex", 0);
     program.bindAttributeLocation("normal", 1);
     program.bindAttributeLocation("color", 2);
@@ -164,7 +172,7 @@ void GlWidget::mouseReleaseEvent(QMouseEvent *e)
         viewPose.rotate(rotDegree, -1,0,0);
     }
 
-//    qDebug() << "updated pose (drag)" << viewPose;
+    qDebug() << "updated pose (drag)" << viewPose;
 }
 
 void GlWidget::wheelEvent(QWheelEvent* e)

@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <iostream>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -14,17 +15,6 @@ MainWindow::MainWindow(QWidget *parent) :
     gvm::InitVertices();
     gvm::AddCartesianAxes();
     gvm::ShowAddedVertices();
-
-    timer = new QTimer(this);
-    timer->setInterval(10);
-    connect(timer, SIGNAL(timeout()), this, SLOT(drawFrame()));
-    timer->start(100);
-}
-
-void MainWindow::drawFrame()
-{
-    gvm::AddCartesianAxes();
-    gvm::ShowAddedVertices();
 }
 
 MainWindow::~MainWindow()
@@ -35,4 +25,31 @@ MainWindow::~MainWindow()
 void MainWindow::on_pushButton_reset_view_clicked()
 {
     glwidget->ResetView();
+}
+
+void MainWindow::on_pushButton_clicked()
+{
+    Eigen::Vector3f translation(ui->doubleSpinBox_tx->value(),
+                                ui->doubleSpinBox_ty->value(),
+                                ui->doubleSpinBox_tz->value());
+    Eigen::Vector3f rotation(ui->doubleSpinBox_rx->value(),
+                             ui->doubleSpinBox_ry->value(),
+                             ui->doubleSpinBox_rz->value());
+    Pose6DofQt currPose(translation, rotation);
+
+    if(cars.empty())
+        cars.emplace_back(currPose);
+    else
+    {
+        Pose6DofQt lastPose = cars.back().getPose();
+        Pose6DofQt neoGlobalPose = lastPose * currPose;
+        cars.emplace_back(neoGlobalPose);
+    }
+
+    // draw cars
+    for(Car car: cars)
+        car.draw();
+
+    gvm::AddCartesianAxes();
+    gvm::ShowAddedVertices();
 }

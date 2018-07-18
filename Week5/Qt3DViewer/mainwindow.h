@@ -3,8 +3,8 @@
 
 #include <QMainWindow>
 #include <QTimer>
-#include "Share/glwidget.h"
-
+#include "Modules/glwidget.h"
+#include "Modules/car.h"
 
 namespace Ui {
 class MainWindow;
@@ -19,14 +19,17 @@ public:
     ~MainWindow();
 
 private slots:
-    void drawFrame();
-
     void on_pushButton_reset_view_clicked();
+
+    void on_pushButton_clicked();
 
 private:
     Ui::MainWindow *ui;
     GlWidget* glwidget;
-    QTimer* timer;
+
+    std::vector<Car> cars;
+
+
 };
 
 #endif // MAINWINDOW_H
