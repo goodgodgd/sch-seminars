@@ -220,6 +220,43 @@ make install
 make clean
 ````
 
+### 7. Python-opencv 설치
+
+1. 가상환경 생성  
+    python package 들을 시스템에 설치하기 보다는 가상환경을 만들어 설치하는 것이 좋다.  
+    시스템에는 python pip numpy 정도만 설치한다.
+    python3을 쓸때는 python3, pip3 라고 3만 붙여서 똑같이 설치하면 된다.  
+    일단 pipenv를 설치하고 프로젝트를 수행할 위치에서 가상환경을 만든다.
+    pipenv의 자세한 사용법은 구글링이나 아래 블로그를 참조
+    
+    [pipenv 사용법1](https://cjh5414.github.io/how-to-manage-python-project-with-pipenv/)  
+    [pipenv 사용법2](https://graspthegist.com/post/python-pipenv/)
+    
+    ```bash
+    pip install pipenv
+    pipenv --python=python2
+    ```
+    하고나면 $HOME/.virtualenvs/envname 폴더가 생겼을 것이다.  
+    envname은 "환경을 생성한 폴더명-hash"로 만들어진다. 예를 들면 `project-XACzLyqR` 와 같은  
+
+2. cv2.so 복사
+    위에서 `make install` 하면 `~/mylib/deploy/opencv-3.4.1` 경로에 라이브러리가 설치된다.
+    ~/mylib/deploy/opencv-3.4.1/lib/python2.x 아래 보면 cv2.so가 있다.  
+    ~/mylib/deploy/opencv-3.4.1/lib/python3.x 아래에는 cv2~~~.so 라는 좀 더 복잡한 이름의 라이브러리 파일이 있다.  
+    
+    이제 so 파일을 `$HOME/.virtualenvs/envname/lib/python2.7/site-packages` 폴더에 복사하면 설치 끝이다.
+
+3. 설치 확인
+    ```bash
+    cd 프로젝트 폴더
+    pipenv shell
+    python
+    import cv2
+    print cv2.__version__
+    ```
+    에러가 안나면 설치가 잘 된것이고 에러가 나면 구글링이다^^;;
+
+
 ### (Optional) 네이버 D2 폰트 설치
 
 코딩할 때나 gedit 쓸 때 한글을 쓸때가 많은데 영어랑 폰트가 다르면 어색해 보입니다.
