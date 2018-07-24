@@ -155,7 +155,8 @@ sudo apt upgrade bazel
 
 Install dependencies, and set default `python` as `python3` [refer here](https://skyoo2003.github.io/post/2017/03/17/what-is-alternatives-command)
 ```
-sudo apt-get install python2.7-dev python-pip python3-numpy python3-dev python3-pip python3-wheel
+sudo apt install python2.7-dev python-pip python-numpy python-wheel 
+sudo apt install python3-dev python3-pip python3-numpy python3-wheel
 sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 100 --slave /usr/bin/pip pip /usr/bin/pip3
 ```
 
