@@ -25,4 +25,6 @@ ros 설치도 미리 되어 있으니 ROBOTIS에서 제공하는 raspbian을 설
 
 #### 변경점
 1. 그냥 설치하면 메인 드라이브의 용량이 7.xGB 만 할당되어 있다.
-2. `sudo apt install gparted` 를 설치하여 SD카드 용량을 모두 활용하게 해주자.
+1. `sudo apt install gparted` 를 설치하여 SD카드 용량을 모두 활용하게 해주자.
+1. ext4 root 파티션으로 꽉 채우지 말고 2GB 정도 남기고 늘린다.
+1. 나머지 2GB 정도는 swap partition 으로 사용한다. 램이 1GB로 매우 부족하다. 
