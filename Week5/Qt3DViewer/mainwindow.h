@@ -20,10 +20,11 @@ public:
 
 private slots:
     void on_pushButton_reset_view_clicked();
-
     void on_pushButton_clicked();
 
 private:
+    void eigenExamples();
+
     Ui::MainWindow *ui;
     GlWidget* glwidget;
 

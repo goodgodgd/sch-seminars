@@ -49,7 +49,7 @@ public:
     void rotate(const float rx, const float ry, const float rz)
     {
         Eigen::AngleAxisf anax;
-        anax = Eigen::AngleAxisf(rx, Eigen::Vector3f::UnitZ())
+        anax = Eigen::AngleAxisf(rx, Eigen::Vector3f::UnitX())
                 * Eigen::AngleAxisf(ry, Eigen::Vector3f::UnitY())
                 * Eigen::AngleAxisf(rz, Eigen::Vector3f::UnitZ());
         affPose = affPose * anax;
