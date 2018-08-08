@@ -18,6 +18,9 @@ MainWindow::MainWindow(QWidget *parent) :
     gvm::ShowAddedVertices();
 
     eigenExamples();
+
+    Eigen::Vector3f vec(1,2,3);
+    qDebug() << "print eigen vector" << vec;
 }
 
 void MainWindow::eigenExamples()

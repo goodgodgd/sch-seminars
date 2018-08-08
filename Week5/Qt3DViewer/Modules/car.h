@@ -14,10 +14,10 @@ public:
     Car(Pose6DofQt& _pose) : Car() { setPose(_pose); }
 
     Car(Eigen::Vector3f translation, Eigen::Vector3f rotation)
+        : Car()
     {
         pose.translate(translation);
         pose.rotate(rotation);
-        createShape();
     }
 
 

@@ -55,7 +55,7 @@ public:
     QVector3D operator*(const QVector3D& point)
     {
         Eigen::Vector3f epoint = affPose * toEigen(point);
-        return QVector3D(epoint(0), epoint(1), epoint(2));
+        return toQVec(epoint);
     }
 
     Pose6DofQt operator*(const Pose6DofQt& other)
