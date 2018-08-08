@@ -36,11 +36,13 @@ public:
     std::vector<cv::Mat> convertAndSplit(const cv::Mat rgbimg, COLOR color);
     cv::Mat convert(const cv::Mat rgbimg, COLOR color);
     cv::Mat markTarget(cv::Mat srcimg, cv::Point pt, int boxSize);
+    cv::Rect ptnSizeToRect(cv::Point center, int rectSize, cv::Size bound);
     void printValues(cv::Mat image, const cv::Point pt, const COLOR color);
-    std::vector<cv::Mat> drawHists(cv::Mat image,
-                                  COLOR color, const cv::Point pt, const int boxSize);
+    std::vector<cv::Mat> drawHists(cv::Mat image, COLOR color,
+                                   const cv::Point pt, const int boxSize,
+                                   const cv::Size histImgSize={0,0});
     cv::Mat calcHist(cv::Mat image, const cv::Point pt, const int boxSize);
-    cv::Mat drawHist(cv::Mat histValue);
+    cv::Mat drawHist(cv::Mat histValue, const cv::Size histImgSize);
 
     std::vector<cv::Mat> floodFill(cv::Mat image, const cv::Point pt,
                                    const COLOR color, const int floodThresh);
