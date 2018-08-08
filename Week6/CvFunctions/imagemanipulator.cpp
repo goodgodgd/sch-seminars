@@ -1,4 +1,6 @@
 #include "imagemanipulator.h"
+#include <map>
+
 
 void onMouse( int evt, int x, int y, int flags, void* param)
 {
@@ -32,6 +34,7 @@ void ImageManipulator::handleEvent(int evt, int x, int y, int flags)
     if(evt == CV_EVENT_LBUTTONDOWN)
     {
         qDebug() << "Mouse event: " << "x=" << x << ", y=" << y;
+        qDebug() << "ID" << imID;
         putEffectAndShow(cv::Point(x,y));
     }
 }
