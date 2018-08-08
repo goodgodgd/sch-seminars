@@ -24,7 +24,7 @@ private:
     ImageProcess improc;
 
     void putEffectAndShow(cv::Point pt);
-    void concatAndShow(std::vector<cv::Mat>& channels);
+    void concatAndShow(std::vector<cv::Mat>& images, QString suffix="_channels");
 };
 
 #endif // IMAGEMANIPULATOR_H

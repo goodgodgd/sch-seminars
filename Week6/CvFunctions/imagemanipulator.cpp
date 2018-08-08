@@ -43,11 +43,11 @@ void ImageManipulator::convertColor(COLOR color)
     concatAndShow(channels);
 }
 
-void ImageManipulator::concatAndShow(std::vector<cv::Mat>& channels)
+void ImageManipulator::concatAndShow(std::vector<cv::Mat>& images, QString suffix)
 {
     cv::Mat outimg;
-    cv::hconcat(channels, outimg);
-    QString cname = imName + "_channels";
+    cv::hconcat(images, outimg);
+    QString cname = imName + suffix;
     cv::imshow(cname.toStdString(), outimg);
 }
 
@@ -69,14 +69,14 @@ void ImageManipulator::putEffectAndShow(cv::Point pt)
     if(params.effect == EFFECT::HISTOGRAM)
     {
         std::vector<cv::Mat> hists =
-                improc.drawHist(image, pt, params.color, params.boxSize);
-        concatAndShow(hists);
+                improc.drawHists(image, params.color, pt, params.boxSize);
+        concatAndShow(hists, "hist");
     }
     else if(params.effect == EFFECT::FLOODFILL)
     {
         std::vector<cv::Mat> chnns =
                 improc.floodFill(image, pt, params.color, params.floodThresh);
-//        concatAndShow(chnns);
+        concatAndShow(chnns);
     }
 }
 

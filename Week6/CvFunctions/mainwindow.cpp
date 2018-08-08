@@ -8,6 +8,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->radioButton_rgb->setChecked(true);
+    ui->radioButton_pixel_value->setChecked(true);
+    ui->lineEdit_hist_box_size->setText("30");
+    ui->lineEdit_floodfill_thresh->setText("2");
 }
 
 MainWindow::~MainWindow()
@@ -68,12 +72,12 @@ void MainWindow::on_lineEdit_hist_box_size_editingFinished()
 
 void MainWindow::on_radioButton_floodfill_toggled(bool checked)
 {
-    setEffect(EFFECT::VALUE);
+    setEffect(EFFECT::FLOODFILL);
 }
 
 void MainWindow::on_lineEdit_floodfill_thresh_editingFinished()
 {
-    setEffect(EFFECT::VALUE);
+    setEffect(EFFECT::FLOODFILL);
 }
 
 void MainWindow::setEffect(EFFECT effect)
