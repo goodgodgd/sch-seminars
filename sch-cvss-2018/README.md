@@ -1,4 +1,5 @@
-# schei-cv-summer-2018
+# sch-cvss-2018
+sch computer vision summer seminar 2018
 
 ### Week1. OpenCV 설치
 Ubuntu, cmake, Qt, Eigen, OpenCV 설치
