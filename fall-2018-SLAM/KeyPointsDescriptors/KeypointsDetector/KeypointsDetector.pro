@@ -18,3 +18,6 @@ LIBS += $$CV_LIB
 
 SOURCES += \
         main.cpp
+
+HEADERS += \
+    keypointdetector.h
