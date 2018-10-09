@@ -13,17 +13,17 @@ public:
         name = _name;
     }
 
-    std::vector<cv::KeyPoint>& detect(cv::Mat _image)
+    void detect(cv::Mat _image)
     {
         image = _image;
         detector->detect(image, keypoints);
-        return keypoints;
     }
 
     void drawAndAppend()
     {
         cv::Mat keyptsimg;
-        cv::drawKeypoints(image, keypoints, keyptsimg);
+        cv::drawKeypoints(image, keypoints, keyptsimg, cv::Scalar::all(-1),
+                          cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
         cv::putText(keyptsimg, name, cv::Point(10,30),
                     cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar::all(0), 2);
         appendResult(keyptsimg);
@@ -57,8 +57,8 @@ private:
     cv::Ptr<cv::Feature2D> detector;
     cv::String name;
     cv::Mat image;
-    static cv::Mat result;
     std::vector<cv::KeyPoint> keypoints;
+    static cv::Mat result;
 };
 
 #endif // KEYPOINTDETECTOR_H
