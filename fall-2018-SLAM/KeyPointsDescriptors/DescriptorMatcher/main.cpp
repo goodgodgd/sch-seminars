@@ -16,6 +16,8 @@ int main()
     if(!cap.isOpened())
         return -1;
 
+    DescriptorMatcher sift(cv::xfeatures2d::SIFT::create(), "sift");
+    DescriptorMatcher surf(cv::xfeatures2d::SURF::create(), "surf");
     DescriptorMatcher orb(cv::ORB::create(), "ORB");
     std::vector<DescriptorMatcher> curDescriptors = {sift, surf, orb};
     std::vector<DescriptorMatcher> refDescriptors = curDescriptors;
