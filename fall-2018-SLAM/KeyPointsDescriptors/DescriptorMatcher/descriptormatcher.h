@@ -35,6 +35,9 @@ public:
     {
         // match descriptors
         cv::FlannBasedMatcher matcher;
+        // ORB만 쓰는 경우 이렇게 설정하는 것을 권장함
+        // 여기서는 모든 descriptor를 하나의 matcher로 처리해서 기본 생성으로 놔둠
+//        cv::FlannBasedMatcher matcher(new cv::flann::LshIndexParams(12, 20, 2));
         matcher.match(this->getDescriptors(), other.getDescriptors(), matches);
 
         // sort matches by score and remove not so good matches
