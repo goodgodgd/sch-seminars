@@ -9,6 +9,7 @@
 class DescHandler
 {
 public:
+    // DescHandler factory function
     static DescHandler* factory(std::string descType, std::string matcherType)
     {
         cv::Ptr<cv::Feature2D> desc;
@@ -43,33 +44,49 @@ public:
         return new DescHandler(descType, desc, matcher);
     }
 
+    //---------- 일반적인 멤버 함수 ----------//
     void detectAndCompute(cv::Mat _image)
     {
         image = _image;
         descMaker->detectAndCompute(image, cv::Mat(), keypoints, descriptors);
     }
 
-    void matchAndDraw(const DescHandler* other, float acceptRatio = 0.5f)
+    std::vector<cv::DMatch> match(const cv::Mat otherDescriptors, float acceptRatio = 0.5f)
     {
-        matcher->match(this->getDescriptors(), other->getDescriptors(), matches);
+        std::vector<cv::DMatch> matches;
+        matcher->match(descriptors, otherDescriptors, matches);
 
         // sort matches by score and remove not so good matches
         std::sort(matches.begin(), matches.end());
         const int numGoodMatches = matches.size() * acceptRatio;
         matches.erase(matches.begin()+numGoodMatches, matches.end());
+        return matches;
+    }
 
+    static void drawAndAppendResult(const DescHandler* desc1, const DescHandler* desc2,
+                                    const std::vector<cv::DMatch>& matches)
+    {
         // draw matches
         cv::Mat matchimg;
-        cv::drawMatches(this->getImage(), this->getKeypoints(),
-                        other->getImage(), other->getKeypoints(),
+        cv::drawMatches(desc1->getImage(), desc1->getKeypoints(),
+                        desc2->getImage(), desc2->getKeypoints(),
                         matches, matchimg);
-        cv::putText(matchimg, name, cv::Point(10,30),
+        cv::putText(matchimg, desc1->getName(), cv::Point(10,30),
                     cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar::all(0), 2);
-        appendResult(matchimg);
+
+        // stack resulting images
+        if(result.empty())
+            result = matchimg;
+        else
+        {
+            std::vector<cv::Mat> himgs = {result, matchimg};
+            cv::vconcat(himgs, result);
+        }
     }
 
     const cv::Mat getDescriptors() const { return descriptors; }
     const cv::Mat getImage() const { return image; }
+    const cv::String getName() const { return name; }
     const std::vector<cv::KeyPoint>& getKeypoints() const { return keypoints; }
 
     static cv::Mat getResultingImg(int maxheight = 0)
@@ -86,6 +103,10 @@ public:
     }
 
 private:
+    // 일단 cv::Ptr로 생성하는 방법이 어렵고
+    // Feature2D와 DescriptorMatcher의 조합이 맞춰야 하기 때문에
+    // 일반 생성자는 공개하지 않고 오직 factory로만 생성하게 한다.
+    // 잘 모르는 사용자도 오류 없이 쉽게 사용
     DescHandler(cv::String _name, cv::Ptr<cv::Feature2D> _descMaker,
                       cv::Ptr<cv::DescriptorMatcher> _matcher)
     {
@@ -94,24 +115,12 @@ private:
         matcher = _matcher;
     }
 
-    static void appendResult(cv::Mat matchimg)
-    {
-        if(result.empty())
-            result = matchimg;
-        else
-        {
-            std::vector<cv::Mat> himgs = {result, matchimg};
-            cv::vconcat(himgs, result);
-        }
-    }
-
     cv::Ptr<cv::Feature2D> descMaker;
     cv::Ptr<cv::DescriptorMatcher> matcher;
     cv::String name;
     cv::Mat image;
     std::vector<cv::KeyPoint> keypoints;
     cv::Mat descriptors;
-    std::vector<cv::DMatch> matches;
     static cv::Mat result;
 };
 

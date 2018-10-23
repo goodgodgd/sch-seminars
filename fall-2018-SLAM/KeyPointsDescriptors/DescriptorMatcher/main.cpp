@@ -23,13 +23,13 @@ int main()
     if(!cap.isOpened())
         return -1;
 
-    std::vector<DescHandler*> curDescriptors = createHandlers();
-    std::vector<DescHandler*> refDescriptors = createHandlers();
+    std::vector<DescHandler*> curDesc = createHandlers();
+    std::vector<DescHandler*> refDesc = createHandlers();
 
     // init ref descriptors by first frame
     cv::Mat initframe;
     cap >> initframe;
-    for(auto des: refDescriptors)
+    for(auto des: refDesc)
         des->detectAndCompute(initframe);
 
     float acceptRatio = 0.5f;
@@ -38,14 +38,14 @@ int main()
     {
         cv::Mat frame;
         cap >> frame;
-        for(auto des: curDescriptors)
+        for(auto des: curDesc)
             des->detectAndCompute(frame);
 
         int key = cv::waitKey(10);
         if(key==int('f') || key==int('F'))
         {
             std::cout << "set fixed reference result" << std::endl;
-            for(auto des: refDescriptors)
+            for(auto des: refDesc)
                 des->detectAndCompute(frame);
         }
         else if(key==int('u') || key==int('U'))
@@ -55,8 +55,12 @@ int main()
         else if(key==int('q') || key==int('Q'))
             break;
 
-        for(int i=0; i<curDescriptors.size(); i++)
-            curDescriptors[i]->matchAndDraw(refDescriptors[i], acceptRatio);
+        for(int i=0; i<curDesc.size(); i++)
+        {
+            auto matches = curDesc[i]->match(refDesc[i]->getDescriptors(), acceptRatio);
+            DescHandler::drawAndAppendResult(curDesc[i], refDesc[i], matches);
+        }
+
 
         cv::Mat result = DescHandler::getResultingImg(1000);
         cv::imshow("matches", result);
