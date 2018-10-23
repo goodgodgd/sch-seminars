@@ -11,17 +11,16 @@ int main()
         return -1;
 
     cv::Ptr<cv::Feature2D> orb = cv::ORB::create();
-    const cv::String name = "ORB";
-    cv::FlannBasedMatcher matcher;
+    cv::Ptr<cv::FlannBasedMatcher> matcher = new cv::FlannBasedMatcher(new cv::flann::LshIndexParams(12, 20, 2));;
     std::vector<cv::KeyPoint> refKeypoints, curKeypoints;
     cv::Mat refDescriptors, curDescriptors;
     std::vector<cv::DMatch> matches;
+    const cv::String name = "ORB";
     const float acceptRatio = 0.5f;
 
     cv::Mat refimg, frame;
     cap >> refimg;
     orb->detectAndCompute(refimg, cv::Mat(), refKeypoints, refDescriptors);
-    refDescriptors.convertTo(refDescriptors, CV_32F);
 
 
     while(1)
@@ -30,9 +29,8 @@ int main()
 
         // detect key points and descriptors as the key points
         orb->detectAndCompute(frame, cv::Mat(), curKeypoints, curDescriptors);
-        curDescriptors.convertTo(curDescriptors, CV_32F);
         // find closest descriptor pairs by flann
-        matcher.match(refDescriptors, curDescriptors, matches);
+        matcher->match(refDescriptors, curDescriptors, matches);
 
         // sort matches by score and remove not so good matches
         std::sort(matches.begin(), matches.end());
@@ -54,7 +52,6 @@ int main()
             std::cout << "set fixed reference result" << std::endl;
             refimg = frame.clone();
             orb->detectAndCompute(refimg, cv::Mat(), refKeypoints, refDescriptors);
-            refDescriptors.convertTo(refDescriptors, CV_32F);
         }
         else if(key==int('q') || key==int('Q'))
             break;

@@ -3,42 +3,55 @@
 
 #include <iostream>
 #include <opencv2/opencv.hpp>
+#include <opencv2/xfeatures2d.hpp>
 
 
-class DescriptorMatcher
+class DescHandler
 {
 public:
-    DescriptorMatcher() {}
-    DescriptorMatcher(cv::Ptr<cv::Feature2D> _featMngr, cv::String _name)
+    static DescHandler* factory(std::string descType, std::string matcherType)
     {
-        featMngr = _featMngr;
-        name = _name;
-    }
+        cv::Ptr<cv::Feature2D> desc;
+        cv::Ptr<cv::DescriptorMatcher> matcher;
+        if(descType=="sift")
+            desc = cv::xfeatures2d::SIFT::create();
+        else if(descType=="surf")
+            desc = cv::xfeatures2d::SURF::create();
+        else if(descType=="orb")
+            desc = cv::ORB::create();
+        else
+            throw std::string("error");
 
-    DescriptorMatcher(const DescriptorMatcher& other)
-    {
-        featMngr = other.getFeatMngr();
-        name = other.getName();
-    }
+        if(matcherType=="flann")
+        {
+            // ORB outputs integer descriptor
+            if(descType=="orb")
+                matcher = new cv::FlannBasedMatcher(new cv::flann::LshIndexParams(12, 20, 2));
+            else
+                matcher = cv::FlannBasedMatcher::create();
+        }
+        else if(matcherType=="bf")
+        {
+            if(descType=="orb")
+                matcher = cv::BFMatcher::create(cv::NORM_HAMMING);
+            else
+                matcher = cv::BFMatcher::create(cv::NORM_L1);
+        }
+        else
+            throw std::string("error");
 
+        return new DescHandler(descType, desc, matcher);
+    }
 
     void detectAndCompute(cv::Mat _image)
     {
         image = _image;
-        featMngr->detectAndCompute(image, cv::Mat(), keypoints, descriptors);
-        // ORB outputs 8bit descriptor but FLANN matcher accept only 32f
-        if(descriptors.type() == CV_8U)
-            descriptors.convertTo(descriptors, CV_32F);
+        descMaker->detectAndCompute(image, cv::Mat(), keypoints, descriptors);
     }
 
-    void matchAndDraw(const DescriptorMatcher& other, float acceptRatio = 0.5f)
+    void matchAndDraw(const DescHandler* other, float acceptRatio = 0.5f)
     {
-        // match descriptors
-        cv::FlannBasedMatcher matcher;
-        // ORB만 쓰는 경우 이렇게 설정하는 것을 권장함
-        // 여기서는 모든 descriptor를 하나의 matcher로 처리해서 기본 생성으로 놔둠
-//        cv::FlannBasedMatcher matcher(new cv::flann::LshIndexParams(12, 20, 2));
-        matcher.match(this->getDescriptors(), other.getDescriptors(), matches);
+        matcher->match(this->getDescriptors(), other->getDescriptors(), matches);
 
         // sort matches by score and remove not so good matches
         std::sort(matches.begin(), matches.end());
@@ -48,18 +61,16 @@ public:
         // draw matches
         cv::Mat matchimg;
         cv::drawMatches(this->getImage(), this->getKeypoints(),
-                        other.getImage(), other.getKeypoints(),
+                        other->getImage(), other->getKeypoints(),
                         matches, matchimg);
         cv::putText(matchimg, name, cv::Point(10,30),
                     cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar::all(0), 2);
         appendResult(matchimg);
     }
 
-    cv::Mat getDescriptors() const { return descriptors; }
-    cv::Mat getImage() const { return image; }
+    const cv::Mat getDescriptors() const { return descriptors; }
+    const cv::Mat getImage() const { return image; }
     const std::vector<cv::KeyPoint>& getKeypoints() const { return keypoints; }
-    const cv::Ptr<cv::Feature2D>& getFeatMngr() const { return featMngr; }
-    const cv::String& getName() const { return name; }
 
     static cv::Mat getResultingImg(int maxheight = 0)
     {
@@ -75,6 +86,14 @@ public:
     }
 
 private:
+    DescHandler(cv::String _name, cv::Ptr<cv::Feature2D> _descMaker,
+                      cv::Ptr<cv::DescriptorMatcher> _matcher)
+    {
+        name = _name;
+        descMaker = _descMaker;
+        matcher = _matcher;
+    }
+
     static void appendResult(cv::Mat matchimg)
     {
         if(result.empty())
@@ -86,7 +105,8 @@ private:
         }
     }
 
-    cv::Ptr<cv::Feature2D> featMngr;
+    cv::Ptr<cv::Feature2D> descMaker;
+    cv::Ptr<cv::DescriptorMatcher> matcher;
     cv::String name;
     cv::Mat image;
     std::vector<cv::KeyPoint> keypoints;

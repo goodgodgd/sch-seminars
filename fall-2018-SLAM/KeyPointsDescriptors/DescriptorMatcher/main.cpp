@@ -1,9 +1,16 @@
 #include <iostream>
-#include <opencv2/opencv.hpp>
-#include <opencv2/xfeatures2d.hpp>
-
 #include "descriptormatcher.h"
-cv::Mat DescriptorMatcher::result;
+cv::Mat DescHandler::result;
+
+
+std::vector<DescHandler*> createHandlers()
+{
+    std::vector<DescHandler*> handlers;
+    handlers.push_back(DescHandler::factory("sift", "bf"));
+    handlers.push_back(DescHandler::factory("surf", "flann"));
+    handlers.push_back(DescHandler::factory("orb", "flann"));
+    return handlers;
+}
 
 
 int main()
@@ -16,17 +23,14 @@ int main()
     if(!cap.isOpened())
         return -1;
 
-    DescriptorMatcher sift(cv::xfeatures2d::SIFT::create(), "sift");
-    DescriptorMatcher surf(cv::xfeatures2d::SURF::create(), "surf");
-    DescriptorMatcher orb(cv::ORB::create(), "ORB");
-    std::vector<DescriptorMatcher> curDescriptors = {sift, surf, orb};
-    std::vector<DescriptorMatcher> refDescriptors = curDescriptors;
+    std::vector<DescHandler*> curDescriptors = createHandlers();
+    std::vector<DescHandler*> refDescriptors = createHandlers();
 
     // init ref descriptors by first frame
     cv::Mat initframe;
     cap >> initframe;
-    for(auto& des: refDescriptors)
-        des.detectAndCompute(initframe);
+    for(auto des: refDescriptors)
+        des->detectAndCompute(initframe);
 
     float acceptRatio = 0.5f;
 
@@ -34,15 +38,15 @@ int main()
     {
         cv::Mat frame;
         cap >> frame;
-        for(auto& des: curDescriptors)
-            des.detectAndCompute(frame);
+        for(auto des: curDescriptors)
+            des->detectAndCompute(frame);
 
         int key = cv::waitKey(10);
         if(key==int('f') || key==int('F'))
         {
             std::cout << "set fixed reference result" << std::endl;
-            for(auto& des: refDescriptors)
-                des.detectAndCompute(frame);
+            for(auto des: refDescriptors)
+                des->detectAndCompute(frame);
         }
         else if(key==int('u') || key==int('U'))
             acceptRatio = std::min(acceptRatio + 0.1f, 1.f);
@@ -52,9 +56,9 @@ int main()
             break;
 
         for(int i=0; i<curDescriptors.size(); i++)
-            curDescriptors[i].matchAndDraw(refDescriptors[i], acceptRatio);
+            curDescriptors[i]->matchAndDraw(refDescriptors[i], acceptRatio);
 
-        cv::Mat result = DescriptorMatcher::getResultingImg(1000);
+        cv::Mat result = DescHandler::getResultingImg(1000);
         cv::imshow("matches", result);
     }
 

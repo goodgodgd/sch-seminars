@@ -43,7 +43,7 @@ public:
     }
 
 private:
-    static void appendResult(cv::Mat keyptsimg)
+    void appendResult(cv::Mat keyptsimg)
     {
         if(result.empty())
             result = keyptsimg;
