@@ -12,7 +12,7 @@ std::vector<PlanarObjDet*> createDetectors()
     cv::Mat trainimg2 = cv::imread(std::string(PRJ_PATH) + "/../data/crosswalk.jpg");
     std::vector<cv::Mat> images = {trainimg1, trainimg2};
     std::vector<PlanarObjDet*> objdets;
-    // standard columns: widths of all the train images are set to TRAINIMG_WIDTH
+    // widths of all the train images are set to TRAINIMG_WIDTH
     for(cv::Mat& image: images)
     {
         if(image.cols != TRAINIMG_WIDTH)
@@ -38,22 +38,22 @@ int main()
         return -1;
 
     std::vector<PlanarObjDet*> objdets = createDetectors();
-
+    DescHandler* queryHdl = DescHandler::factory("orb", "flann");
     float inlierRatio = 0.2;
 
     while(1)
     {
         cv::Mat frame;
-        for(int i=0; i<4; i++)
-            cap >> frame;
+        cap >> frame;
+        queryHdl->detectAndCompute(frame);
 
         for(auto det: objdets)
-            det->detect(frame, inlierRatio);
+            det->detect(queryHdl, inlierRatio);
         cv::Mat result = PlanarObjDet::resultingImg(1000);
         if(!result.empty())
             cv::imshow("detection result", result);
 
-        int key = cv::waitKey(0);
+        int key = cv::waitKey(10);
         if(key==int('a') || key==int('A'))
         {
             std::cout << "add train image" << std::endl;
