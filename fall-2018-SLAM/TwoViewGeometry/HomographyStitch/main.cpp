@@ -42,7 +42,7 @@ int main()
     matcher.match(descriptor1, descriptor2, match);
     std::cout << "num of matchings: " << match.size() << std::endl;
 
-    // Calculate planar homography and merge them
+    // compute planar homography and merge two images
     std::vector<cv::Point2f> points1, points2;
     for (size_t i = 0; i < match.size(); i++)
     {
@@ -55,13 +55,28 @@ int main()
     cv::warpPerspective(image2, merge, H, cv::Size(image1.cols * 2, image1.rows));
     merge.colRange(0, image1.cols) = image1 * 1; // Copy
 
+    // decompose homography into rotation(R), translation(t), and normal(n)
+    float intrinsic[] = {300.f, 0.f, image1.cols/2.f,
+                         0.f, 300.f, image1.rows/2.f,
+                         0.f, 0.f, 1.f};
+    cv::Mat K = cv::Mat(3, 3, CV_32FC1, intrinsic);
+    std::vector<cv::Mat> R, t, n;
+    std::cout << "arbitrary K= " << K << std::endl;
+    cv::decomposeHomographyMat(H, K, R, t, n);
+    std::cout << "\nhomography decomposition: transformation from src(2, right) to dst(1, left)\n";
+    for(int i=0; i<4; i++)
+    {
+        std::cout << "possible decomposition " << i << std::endl;
+        std::cout << "R= " << R[i] << "\nt= " << t[i].t() << "\nn= " << n[i].t() << std::endl;
+    }
+
     // find inlier matches from homography reprojection error
     std::vector<int> inlierIndices = reprojectionError(points2, points1, H);
     std::vector<cv::DMatch> inlierMatch;
     for(int ind: inlierIndices)
         inlierMatch.push_back(match.at(ind));
 
-    // draw matches
+    // draw matches: all matches + only inlier matches
     cv::Mat inlierMatchImg, matchImg, viewImg;
     cv::drawMatches(image1, keypoint1, image2, keypoint2, inlierMatch, inlierMatchImg);
     cv::drawMatches(image1, keypoint1, image2, keypoint2, match, matchImg);
