@@ -34,6 +34,13 @@ public:
         rotate(rotation);
     }
 
+    Pose6Dof(const Eigen::Vector3f& translation, const Eigen::Matrix3f& rotation)
+        : Pose6Dof()
+    {
+        translate(translation);
+        rotate(rotation);
+    }
+
     void translate(const Eigen::Vector3f& trans)
     {
         Eigen::Translation3f translation(trans);
@@ -60,6 +67,11 @@ public:
         rotate(rotAngles(0), rotAngles(1), rotAngles(2));
     }
 
+    void rotate(const Eigen::Matrix3f& rotation)
+    {
+        Eigen::AngleAxisf anax(rotation);
+        affPose = affPose * anax;
+    }
 
     // global^T_this * this^T_other = g^T_other
     // transform point in frame 'other' w.r.t 'this' to frame 'global'
@@ -92,7 +104,7 @@ public:
         return trans;
     }
 
-    Eigen::Matrix3f getRotation()
+    Eigen::Matrix3f getRotation() const
     {
         Eigen::Matrix3f rotat = affPose.rotation();
         return rotat;

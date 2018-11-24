@@ -18,10 +18,10 @@ GlWidget::GlWidget(QWidget *parent) :
 //    viewPose.translate(trn_default);
 //    viewPose.rotate(rot_default);
 
-    defaultPose = QMatrix4x4(    0.873826,  0.003236,  0.48622, -0.649472
-                                ,0.015838, -0.999637, -0.02180,  0.148617
-                                ,0.485981,  0.026758, -0.87356,  1.47186
-                                ,0       ,  0       ,  0      ,  1);
+    defaultPose = QMatrix4x4( -0.231482,  0.237715, -0.943345,  0.859788,
+                               0.164911,  0.965242,  0.202760, -0.149852,
+                               0.958757, -0.108639, -0.262648,  0.316410,
+                                      0,         0,         0,         1);
     viewPose = defaultPose;
 
     setFocusPolicy(Qt::StrongFocus);

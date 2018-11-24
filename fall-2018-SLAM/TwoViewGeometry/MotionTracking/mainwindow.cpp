@@ -18,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent) :
     gvm::ShowAddedVertices();
 
     timer = new QTimer(this);
+    timer->setInterval(100);
     connect(timer, SIGNAL(timeout()), this, SLOT(on_timer()));
     timer->start();
 
@@ -63,6 +64,7 @@ void MainWindow::on_pushButton_clicked()
 
 void MainWindow::on_pushButton_start_clicked()
 {
+    qDebug() << "start" << timer->isActive();
     if(timer->isActive())
         timer->stop();
     else
@@ -72,9 +74,12 @@ void MainWindow::on_pushButton_start_clicked()
 void MainWindow::on_timer()
 {
     motionTracker->run();
+    gvm::AddCartesianAxes();
+    gvm::ShowAddedVertices();
 }
 
 void MainWindow::on_pushButton_setup_clicked()
 {
     motionTracker->setup();
+    timer->start();
 }

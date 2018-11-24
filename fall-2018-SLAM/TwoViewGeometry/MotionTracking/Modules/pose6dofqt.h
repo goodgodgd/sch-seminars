@@ -13,16 +13,19 @@ public:
     Pose6DofQt(const Eigen::Vector3f& translation, const Eigen::Vector3f& rotation)
         :Pose6Dof(translation, rotation) {}
 
+    Pose6DofQt(const Eigen::Vector3f& translation, const Eigen::Matrix3f& rotation)
+        :Pose6Dof(translation, rotation) {}
+
     Pose6DofQt(const QVector3D& translation, const QVector3D& rotation)
         :Pose6Dof(toEigen(translation), toEigen(rotation)) {}
 
-    inline Eigen::Vector3f toEigen(const QVector3D& qvec)
+    inline Eigen::Vector3f toEigen(const QVector3D& qvec) const
     {
         Eigen::Vector3f evec(qvec.x(), qvec.y(), qvec.z());
         return evec;
     }
 
-    inline QVector3D toQVec(const Eigen::Vector3f& evec)
+    inline QVector3D toQVec(const Eigen::Vector3f& evec) const
     {
         QVector3D qvec(evec(0), evec(1), evec(2));
         return qvec;
@@ -46,19 +49,19 @@ public:
         rotate(rotAngles.x(), rotAngles.y(), rotAngles.z());
     }
 
-    QVector3D getPosition()
+    QVector3D getPosition() const
     {
         Eigen::Vector3f trans = affPose.translation();
         return toQVec(trans);
     }
 
-    QVector3D operator*(const QVector3D& point)
+    QVector3D operator*(const QVector3D& point) const
     {
         Eigen::Vector3f epoint = affPose * toEigen(point);
         return toQVec(epoint);
     }
 
-    Pose6DofQt operator*(const Pose6DofQt& other)
+    Pose6DofQt operator*(const Pose6DofQt& other) const
     {
         Pose6DofQt dstPose;
         dstPose.affPose = this->affPose * other.affPose;
@@ -66,5 +69,24 @@ public:
     }
 
 };
+
+inline QDebug operator <<(QDebug debug, const Pose6DofQt &pose)
+{
+    QString number;
+    QDebugStateSaver saver(debug);
+    QVector3D posit = pose.getPosition();
+    Eigen::Matrix3f rotat = pose.getRotation();
+    Eigen::Quaternionf quat(rotat);
+    debug.nospace() << "evec3(";
+    debug.nospace() << number.sprintf("%.4f, ", posit.x()).toLocal8Bit().data();
+    debug.nospace() << number.sprintf("%.4f, ", posit.y()).toLocal8Bit().data();
+    debug.nospace() << number.sprintf("%.4f, ", posit.z()).toLocal8Bit().data();
+    debug.nospace() << number.sprintf("%.4f, ", quat.w()).toLocal8Bit().data();
+    debug.nospace() << number.sprintf("%.4f, ", quat.x()).toLocal8Bit().data();
+    debug.nospace() << number.sprintf("%.4f, ", quat.y()).toLocal8Bit().data();
+    debug.nospace() << number.sprintf("%.4f, ", quat.z()).toLocal8Bit().data();
+    debug.nospace() << ")";
+    return debug.space();
+}
 
 #endif // POSE6DOFQT_H
