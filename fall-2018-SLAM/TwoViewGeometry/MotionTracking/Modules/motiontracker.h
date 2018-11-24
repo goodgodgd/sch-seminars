@@ -13,7 +13,7 @@ public:
     void run();
 
 private:
-    std::vector<cv::Point3f> computePoseAndPoints(cv::Mat curframe, cv::Mat& outTransform);
+    cv::Mat computePoseAndPoints(cv::Mat curframe, std::vector<cv::Point3f> &recon3Dpts);
     void isSetupFinished();
 
     cv::VideoCapture cap;
