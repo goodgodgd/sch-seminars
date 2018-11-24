@@ -12,8 +12,8 @@ MotionTracker::MotionTracker()
     // camera matrix K
     cv::Mat frame;
     cap >> frame;
-    double intrinsics[9] = {300., 0., frame.cols/2,
-                            0., 300., frame.rows/2,
+    double intrinsics[9] = {300., 0., double(frame.cols/2),
+                            0., 300., double(frame.rows/2),
                             0., 0., 1.};
     camK = cv::Mat(3, 3, CV_64F, intrinsics);
     /// IMPORTANT!!
@@ -52,35 +52,50 @@ std::vector<cv::Point3f> MotionTracker::computePoseAndPoints(
     std::vector<cv::Point2f> keyfpts_aligned, curfpts_aligned;
     for(auto& match: matches)
     {
-        keyfpts_aligned.push_back(keyfpoints.at(match.queryIdx).pt);
-        curfpts_aligned.push_back(curfpoints.at(match.trainIdx).pt);
+        keyfpts_aligned.push_back(keyfpoints.at(match.trainIdx).pt);
+        curfpts_aligned.push_back(curfpoints.at(match.queryIdx).pt);
     }
 
     DescHandler::drawAndAppendResult(curfDesc, keyfDesc, matches);
+    cv::Mat matchres1 = DescHandler::getResultingImg(360);
+    cv::imshow("matchres1", matchres1);
+    cv::waitKey(10);
 
     // compute essential matrix
     cv::Mat mask;
     std::cout << "key points: " << keyfpts_aligned.size()
               << " kfpt=" << keyfpts_aligned[0] << " cfpt=" << curfpts_aligned[0] << std::endl;
-    cv::Mat E = cv::findEssentialMat(keyfpts_aligned, curfpts_aligned,
-                                     camK, cv::RANSAC, 0.9, 1.0, mask);
+    cv::Mat E = cv::findEssentialMat(keyfpts_aligned, curfpts_aligned, camK,
+                                     cv::RANSAC, 0.99, 2.0, mask);
     std::cout << "essential" << std::endl << E << std::endl;
+    std::cout << "camK" << std::endl << camK << std::endl;
 
     // extract inlier points
     std::vector<cv::Point2f> keyfpts_inlier, curfpts_inlier;
     std::vector<cv::DMatch> matches_inlier;
     for(int i=0; i<mask.rows; i++)
     {
-        if(mask.at<uchar>(i))
+        if(mask.at<uchar>(i)==1)
         {
             keyfpts_inlier.push_back(keyfpts_aligned[i]);
             curfpts_inlier.push_back(curfpts_aligned[i]);
             matches_inlier.push_back(matches[i]);
         }
+        cv::Mat pt1 = (cv::Mat_<double>(3,1) << double(keyfpts_aligned[i].x),
+                       double(keyfpts_aligned[i].y), 1.);
+        cv::Mat pt2 = (cv::Mat_<double>(3,1) << double(curfpts_aligned[i].x),
+                       double(curfpts_aligned[i].y), 1.);
+        cv::Mat err = pt1.t() * camK.inv().t() * E * camK.inv() * pt2;
+        std::cout << "pterr=" << err << ", mask=" << (int)mask.at<uchar>(i)
+                  << ", pt1=" << pt1.t() << std::endl
+                  << "              , pt2=" << pt2.t() << std::endl;
+        if((int)mask.at<uchar>(i)==1 && fabs(pt1.at<double>(1) - pt2.at<double>(1)) > 100.)
+            std::cout << "check error" << fabs(pt1.at<double>(1) - pt2.at<double>(1))
+                      << std::endl;
     }
     mask.release();
-    std::cout << "inliers from findEssentialMat: " << keyfpts_inlier.size() << ", "
-              << curfpts_inlier.size() << std::endl;
+    std::cout << "inliers from findEssentialMat: " << keyfpts_inlier.size()
+              << " from " << keyfpts_aligned.size() << std::endl;
 
     DescHandler::drawAndAppendResult(curfDesc, keyfDesc, matches_inlier);
 

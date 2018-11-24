@@ -42,8 +42,8 @@ void GlWidget::initializeGL()
     glClearColor(0,0,0,1);
 
     // link shaders
-    program.addShaderFromSourceFile(QOpenGLShader::Vertex, QString(ProjectPath) + "/Modules/vertex.vert");
-    program.addShaderFromSourceFile(QOpenGLShader::Fragment, QString(ProjectPath) + "/Modules/fragment.frag");
+    program.addShaderFromSourceFile(QOpenGLShader::Vertex, QString(PRJ_PATH) + "/Modules/vertex.vert");
+    program.addShaderFromSourceFile(QOpenGLShader::Fragment, QString(PRJ_PATH) + "/Modules/fragment.frag");
     program.bindAttributeLocation("vertex", 0);
     program.bindAttributeLocation("normal", 1);
     program.bindAttributeLocation("color", 2);
