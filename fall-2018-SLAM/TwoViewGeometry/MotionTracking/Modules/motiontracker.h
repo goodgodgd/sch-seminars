@@ -20,6 +20,16 @@ public:
 
 private:
     Pose6DofQt computePoseAndPoints(cv::Mat curframe, std::vector<cv::Point3f> &recon3Dpts);
+    void matchPoints(cv::Mat curframe, std::vector<cv::DMatch>& matches,
+                     std::vector<cv::Point2f> &keyfpoints, std::vector<cv::Point2f> &curfpoints);
+    cv::Mat findEssentialMatrix(std::vector<cv::Point2f>& keyfpoints, std::vector<cv::Point2f>& curfpoints,
+                                std::vector<cv::DMatch>& matches);
+    Pose6DofQt reconstruct(cv::Mat E, std::vector<cv::Point2f>& keyfpoints,
+                           std::vector<cv::Point2f>& curfpoints,
+                           std::vector<cv::DMatch>& matches,
+                           std::vector<cv::Point3f>& recon3Dpts);
+
+
     Pose6DofQt toPoseVector(cv::Mat R, cv::Mat t);
     bool beforeSetup();
     Pose6DofQt computePoseByProjection(cv::Mat curframe,

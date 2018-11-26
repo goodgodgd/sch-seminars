@@ -44,7 +44,7 @@ public:
         return new DescHandler(descType, desc, matcher);
     }
 
-    //---------- 일반적인 멤버 함수 ----------//
+    //---------- normal member functions ----------//
     void detectAndCompute(cv::Mat _image)
     {
         image = _image;
@@ -63,6 +63,24 @@ public:
         return matches;
     }
 
+    void extractByIndices(std::vector<int>& indices)
+    {
+        std::vector<cv::KeyPoint> neoKeypoints;
+        cv::Mat neoDescriptors = cv::Mat(0, descriptors.cols, descriptors.type());
+
+        for(int i: indices)
+        {
+            neoKeypoints.push_back(keypoints[i]);
+            neoDescriptors.push_back(descriptors.row(i));
+        }
+
+        keypoints = neoKeypoints;
+        descriptors = neoDescriptors;
+        std::cout << "extract by indices: " << indices.size() << " " << keypoints.size()
+                  << " " << descriptors.rows << std::endl;
+    }
+
+    //---------- static member functions ----------//
     static void drawAndAppendResult(const DescHandler* query, const DescHandler* train,
                                     const std::vector<cv::DMatch>& matches)
     {
