@@ -30,7 +30,7 @@ DEFINES += PRJ_PATH=\\\"$$PWD\\\"
 LIBRARY_ROOT=/home/ian/mylib/deploy
 
 # import opencv
-OPENCV_VERSION = opencv-3.4.4
+OPENCV_VERSION = opencv-3.4
 INCLUDEPATH += $$LIBRARY_ROOT/$$OPENCV_VERSION/include
 LIBS += -L$$LIBRARY_ROOT/$$OPENCV_VERSION/lib
 CV_LIB_FULL = $$system("find $$LIBRARY_ROOT/$$OPENCV_VERSION/lib -maxdepth 1 -name '*.so'")

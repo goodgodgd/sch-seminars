@@ -25,7 +25,9 @@ private:
     Pose6DofQt computePoseByProjection(cv::Mat curframe,
             const std::vector<cv::Point3f>& points3D);
     void showImage(cv::Mat image, std::string wndname, int height);
-    void draw3DPose(const Pose6DofQt& curPose);
+    void draw();
+    void drawPose(const Pose6DofQt& pose);
+    void drawPoints(const std::vector<cv::Point3f>& points);
 
     cv::VideoCapture cap;
     cv::Mat keyframe;

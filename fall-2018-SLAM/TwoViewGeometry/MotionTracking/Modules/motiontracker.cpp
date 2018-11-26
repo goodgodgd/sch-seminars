@@ -153,12 +153,12 @@ void MotionTracker::run()
 
     if(beforeSetup())
     {
-        draw3DPose(curPose);
+        draw();
         return;
     }
 
 //    curPose = computePoseByProjection(curframe, points3D);
-    draw3DPose(curPose);
+    draw();
     qDebug() << "current pose" << curPose;
 }
 
@@ -201,7 +201,13 @@ void MotionTracker::showImage(cv::Mat image, std::string wndname, int height)
     cv::waitKey(10);
 }
 
-void MotionTracker::draw3DPose(const Pose6DofQt& curPose)
+void MotionTracker::draw()
+{
+    drawPose(curPose);
+    drawPoints(points3D);
+}
+
+void MotionTracker::drawPose(const Pose6DofQt& pose)
 {
     static std::vector<QVector3D> localVerts;
     // initialze localVerts in local frame
@@ -216,7 +222,7 @@ void MotionTracker::draw3DPose(const Pose6DofQt& curPose)
 
     std::vector<QVector3D> globalVerts;
     for(auto& lvert : localVerts)
-        globalVerts.push_back( curPose * lvert );
+        globalVerts.push_back( pose * lvert );
 
     QVector3D color(1,1,0);
     QVector3D normal(0,0,1);
@@ -239,5 +245,16 @@ void MotionTracker::draw3DPose(const Pose6DofQt& curPose)
     gvm::AddVertex(VertexType::line, globalVerts[4], color, normal, 1);
     gvm::AddVertex(VertexType::line, globalVerts[1], color, normal, 1, true);
 
-    // TODO: pose뿐만 아니라 3차원 점도 그려보자
+
+}
+
+void MotionTracker::drawPoints(const std::vector<cv::Point3f>& points)
+{
+    QVector3D color(0,1,1);
+    QVector3D normal(0,0,1);
+    for(const cv::Point3f& pt: points)
+    {
+        QVector3D vert(pt.x, pt.y, pt.z);
+        gvm::AddVertex(VertexType::point, vert, color, normal, 2);
+    }
 }

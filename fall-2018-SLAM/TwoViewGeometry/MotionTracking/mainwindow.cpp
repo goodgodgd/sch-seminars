@@ -35,33 +35,6 @@ void MainWindow::on_pushButton_reset_view_clicked()
     glwidget->ResetView();
 }
 
-void MainWindow::on_pushButton_clicked()
-{
-    Eigen::Vector3f translation(ui->doubleSpinBox_tx->value(),
-                                ui->doubleSpinBox_ty->value(),
-                                ui->doubleSpinBox_tz->value());
-    Eigen::Vector3f rotation(ui->doubleSpinBox_rx->value(),
-                             ui->doubleSpinBox_ry->value(),
-                             ui->doubleSpinBox_rz->value());
-    Pose6DofQt currPose(translation, rotation);
-
-    if(cars.empty())
-        cars.emplace_back(currPose);
-    else
-    {
-        Pose6DofQt lastPose = cars.back().getPose();
-        Pose6DofQt neoGlobalPose = lastPose * currPose;
-        cars.emplace_back(neoGlobalPose);
-    }
-
-    // draw cars
-    for(Car car: cars)
-        car.draw();
-
-    gvm::AddCartesianAxes();
-    gvm::ShowAddedVertices();
-}
-
 void MainWindow::on_pushButton_start_clicked()
 {
     qDebug() << "start" << timer->isActive();

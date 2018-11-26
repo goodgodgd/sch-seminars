@@ -29,12 +29,7 @@ private:
     Ui::MainWindow *ui;
     GlWidget* glwidget;
     QTimer* timer;
-
     MotionTracker* motionTracker;
-    std::vector<Car> cars;
-
-    void on_pushButton_clicked();
-
 };
 
 #endif // MAINWINDOW_H
