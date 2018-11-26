@@ -36,31 +36,63 @@ void MotionTracker::setup()
 
     // in the second, compute 3D points from essential matrix
     curPose = computePoseAndPoints(curframe, points3D);
-    std::cout << "points: " << points3D.size() << std::endl;
+    qDebug() << "setup pose" << curPose << "points" << points3D.size();
 }
 
-Pose6DofQt MotionTracker::computePoseAndPoints(
-        cv::Mat curframe, std::vector<cv::Point3f>& recon3Dpts)
+Pose6DofQt MotionTracker::computePoseAndPoints(cv::Mat curframe, std::vector<cv::Point3f>& recon3Dpts)
 {
-    // detect keypoints, compute descriptors, match current descriptors with keyframe's
+    std::vector<cv::DMatch> matches;
+    std::vector<cv::Point2f> keyfpoints;
+    std::vector<cv::Point2f> curfpoints;
+
+    // find keypoints in current frame, match them with keyframe's keypoints and align them with matches
+    matchPoints(curframe, matches, keyfpoints, curfpoints);
+
+    // compute essential matrix and extract inliers from keyfpoints, curfpoints, and matches
+    cv::Mat E = findEssentialMatrix(keyfpoints, curfpoints, matches);
+
+    // reconstruct pose and 3d points and extract inliers from keyfpoints, curfpoints, and matches
+    Pose6DofQt pose = reconstruct(E, keyfpoints, curfpoints, matches, recon3Dpts);
+
+    cv::Mat matchres = DescHandler::getResultingImg(600);
+    cv::imshow("match result", matchres);
+    cv::waitKey(10);
+
+    // extract descriptors of inlier points
+    std::vector<int> reconInds;
+    for(auto& match: matches)
+        reconInds.push_back(match.trainIdx);
+    keyfDesc->extractByIndices(reconInds);
+
+    return pose;
+}
+
+void MotionTracker::matchPoints(cv::Mat curframe, std::vector<cv::DMatch>& matches,
+                 std::vector<cv::Point2f>& keyfpoints, std::vector<cv::Point2f>& curfpoints)
+{
     curfDesc->detectAndCompute(curframe);
-    std::vector<cv::DMatch> matches = curfDesc->match(keyfDesc->getDescriptors(), 0.8f);
+    matches = curfDesc->match(keyfDesc->getDescriptors(), 0.8f);
+
+    std::vector<cv::KeyPoint> keyfKeypoints = keyfDesc->getKeypoints();
+    std::vector<cv::KeyPoint> curfKeypoints = curfDesc->getKeypoints();
+    keyfpoints.clear();
+    curfpoints.clear();
 
     // align keypoints from both images
-    std::vector<cv::KeyPoint> keyfpoints = keyfDesc->getKeypoints();
-    std::vector<cv::KeyPoint> curfpoints = curfDesc->getKeypoints();
-    std::vector<cv::Point2f> keyfpts_aligned, curfpts_aligned;
     for(auto& match: matches)
     {
-        keyfpts_aligned.push_back(keyfpoints.at(match.trainIdx).pt);
-        curfpts_aligned.push_back(curfpoints.at(match.queryIdx).pt);
+        keyfpoints.push_back(keyfKeypoints.at(match.trainIdx).pt);
+        curfpoints.push_back(curfKeypoints.at(match.queryIdx).pt);
     }
     DescHandler::drawAndAppendResult(curfDesc, keyfDesc, matches);
+}
 
-
+cv::Mat MotionTracker::findEssentialMatrix(std::vector<cv::Point2f>& keyfpoints,
+                std::vector<cv::Point2f>& curfpoints, std::vector<cv::DMatch>& matches)
+{
     // compute essential matrix
     cv::Mat mask;
-    cv::Mat E = cv::findEssentialMat(keyfpts_aligned, curfpts_aligned, camK,
+    cv::Mat E = cv::findEssentialMat(keyfpoints, curfpoints, camK,
                                      cv::RANSAC, 0.99, 2.0, mask);
     std::cout << "essential" << std::endl << E << std::endl;
 
@@ -71,63 +103,69 @@ Pose6DofQt MotionTracker::computePoseAndPoints(
     {
         if(int(mask.at<uchar>(i))>0)
         {
-            keyfpts_inlier.push_back(keyfpts_aligned[i]);
-            curfpts_inlier.push_back(curfpts_aligned[i]);
+            keyfpts_inlier.push_back(keyfpoints[i]);
+            curfpts_inlier.push_back(curfpoints[i]);
             matches_inlier.push_back(matches[i]);
         }
     }
     mask.release();
-    std::cout << "inliers from findEssentialMat: " << keyfpts_inlier.size()
-              << " from " << keyfpts_aligned.size() << std::endl;
+    std::cout << "inliers by findEssentialMat: " << keyfpts_inlier.size()
+              << " from " << keyfpoints.size() << std::endl;
     DescHandler::drawAndAppendResult(curfDesc, keyfDesc, matches_inlier);
 
+    keyfpoints = keyfpts_inlier;
+    curfpoints = curfpts_inlier;
+    matches = matches_inlier;
+    return E;
+}
 
+Pose6DofQt MotionTracker::reconstruct(cv::Mat E, std::vector<cv::Point2f>& keyfpoints,
+                       std::vector<cv::Point2f>& curfpoints,
+                       std::vector<cv::DMatch>& matches,
+                       std::vector<cv::Point3f>& recon3Dpts)
+{
     // recover pose
-    cv::Mat R, t;
-    cv::Mat triangulatedPts;
-    cv::recoverPose(E, keyfpts_inlier, curfpts_inlier, camK, R, t, 1000.f, mask,
-                    triangulatedPts);
+    cv::Mat R, t, mask;
+    cv::Mat triangPoints;
+    cv::recoverPose(E, keyfpoints, curfpoints, camK, R, t, 1000.f, mask,
+                    triangPoints);
 
     std::cout << "recover pose: " << std::endl << "R= " << R << std::endl
               << "t= " << t.t() << std::endl;
-    std::cout << "triangulated points " << ", " << triangulatedPts.cols
-              << " type:" << triangulatedPts.type() << std::endl
-              << triangulatedPts.colRange(0, 3) << std::endl;
-//    std::cout << "mask" << mask.t() << std::endl;
+    std::cout << "triangulated points " << ", " << triangPoints.cols
+              << " type:" << triangPoints.type() << std::endl
+              << triangPoints.colRange(0, 3) << std::endl;
 
     // set transformation output
     Pose6DofQt outPose = toPoseVector(R, t);
 
     // normalize scales of points to 1
     float scale;
-    std::vector<cv::DMatch> matches_pose_inlier;
-    triangulatedPts.convertTo(triangulatedPts, CV_32F);
+    std::vector<cv::Point2f> keyfpts_inlier, curfpts_inlier;
+    std::vector<cv::DMatch> matches_inlier;
+    triangPoints.convertTo(triangPoints, CV_32F);
     recon3Dpts.clear();
-    for(int i=0; i<triangulatedPts.cols; i++)
+
+    for(int i=0; i<triangPoints.cols; i++)
     {
         if(int(mask.at<uchar>(i))>0)
         {
-            scale = triangulatedPts.at<float>(3,i);
-            recon3Dpts.emplace_back(triangulatedPts.at<float>(0,i)/scale,
-                               triangulatedPts.at<float>(1,i)/scale,
-                               triangulatedPts.at<float>(2,i)/scale);
-            matches_pose_inlier.push_back(matches_inlier[i]);
+            scale = triangPoints.at<float>(3,i);
+            recon3Dpts.emplace_back(triangPoints.at<float>(0,i)/scale,
+                                    triangPoints.at<float>(1,i)/scale,
+                                    triangPoints.at<float>(2,i)/scale);
+            keyfpts_inlier.push_back(keyfpoints[i]);
+            curfpts_inlier.push_back(curfpoints[i]);
+            matches_inlier.push_back(matches[i]);
         }
     }
-    std::cout << "recoverpose inliers: " << recon3Dpts.size() << " in "
-              << triangulatedPts.cols << std::endl;
+    std::cout << "inliers by recoverPose: " << recon3Dpts.size() << " in "
+              << triangPoints.cols << std::endl;
+    DescHandler::drawAndAppendResult(curfDesc, keyfDesc, matches_inlier);
 
-//    std::cout << "inlier points" << std::endl;
-//    for(auto& pt: pts3d)
-//        std::cout << pt << std::endl;
-
-    DescHandler::drawAndAppendResult(curfDesc, keyfDesc, matches_pose_inlier);
-    cv::Mat matchres = DescHandler::getResultingImg(1000);
-    std::cout << "matchres size=" << matchres.rows << ", " << matchres.cols << std::endl;
-    cv::imshow("match result", matchres);
-    cv::waitKey(10);
-    std::cout << "draw matchs" << std::endl;
-
+    keyfpoints = keyfpts_inlier;
+    curfpoints = curfpts_inlier;
+    matches = matches_inlier;
     return outPose;
 }
 
@@ -158,8 +196,8 @@ void MotionTracker::run()
     }
 
 //    curPose = computePoseByProjection(curframe, points3D);
+//    qDebug() << "current pose" << curPose;
     draw();
-    qDebug() << "current pose" << curPose;
 }
 
 Pose6DofQt MotionTracker::computePoseByProjection(cv::Mat curframe,
