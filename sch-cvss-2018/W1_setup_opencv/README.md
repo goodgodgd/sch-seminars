@@ -27,8 +27,9 @@ chmod a+x qt-opensource-linux-x64-5.11.0.run
 ./qt-opensource-linux-x64-5.11.0.run
 ```
 - 설치할 때 Qt 5.x 아래 Desktop gcc 64-bit 를 체크해야함 (Prebuilt Qt library)
-- qtcreator 실행하면 플러그인 오류 메시지 나타남
+- qtcreator 실행시 플러그인 오류 메시지 나타날 수 있음
 - qtcreator - Help - About Plugins - QtQuick - QmlDesigner, QmlProfiler 두 개 체크해제
+- qtcreator에서 fcitx 한글 입력 안될때: http://wookiist.tistory.com/8
 
 ### 3. OpenCV dependency 설치
 
@@ -263,7 +264,7 @@ make clean
 특히 gedit에서 한글을 쓰면 칸이 늘어나죠;;
 그래서 한글이 포함된 폰트를 쓰면 좋고 게다가 코딩용으로 커스터마이징 된 폰트면 더 좋겠죠.
 찾아보니 네이버에서 만든게 있네요. 개인적으로 별로 예쁜것 같진 않지만 익숙해지면 되겠죠.
-  
+
 ````
 cd ~/mylib
 wget -O D2Coding.zip https://github.com/naver/d2codingfont/raw/master/D2Coding-Ver1.3.2-20180524.zip

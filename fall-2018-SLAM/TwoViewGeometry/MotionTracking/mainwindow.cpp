@@ -37,7 +37,6 @@ void MainWindow::on_pushButton_reset_view_clicked()
 
 void MainWindow::on_pushButton_start_clicked()
 {
-    qDebug() << "start" << timer->isActive();
     if(timer->isActive())
         timer->stop();
     else
@@ -53,6 +52,12 @@ void MainWindow::on_timer()
 
 void MainWindow::on_pushButton_setup_clicked()
 {
-    motionTracker->setup();
-    timer->start();
+    bool done = motionTracker->setup();
+    gvm::AddCartesianAxes();
+    gvm::ShowAddedVertices();
+
+    if(done)
+        timer->stop();
+    else
+        timer->start();
 }

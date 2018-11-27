@@ -15,7 +15,7 @@ class MotionTracker
 {
 public:
     MotionTracker();
-    void setup();
+    bool setup();
     void run();
 
 private:
@@ -32,9 +32,9 @@ private:
 
     Pose6DofQt toPoseVector(cv::Mat R, cv::Mat t);
     bool beforeSetup();
-    Pose6DofQt computePoseByProjection(cv::Mat curframe,
-            const std::vector<cv::Point3f>& points3D);
+    Pose6DofQt computePoseByProjection(cv::Mat curframe, const std::vector<cv::Point3f>& points3D);
     void showImage(cv::Mat image, std::string wndname, int height);
+
     void draw();
     void drawPose(const Pose6DofQt& pose);
     void drawPoints(const std::vector<cv::Point3f>& points);

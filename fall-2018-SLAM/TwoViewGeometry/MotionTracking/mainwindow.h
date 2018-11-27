@@ -4,7 +4,6 @@
 #include <QMainWindow>
 #include <QTimer>
 #include "Modules/glwidget.h"
-#include "Modules/car.h"
 #include "Modules/motiontracker.h"
 
 namespace Ui {

@@ -45,7 +45,8 @@ SOURCES += \
         mainwindow.cpp \
     Modules/glvertexmanager.cpp \
     Modules/glwidget.cpp \
-    Modules/motiontracker.cpp
+    Modules/motiontracker.cpp \
+    Modules/deschandler.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -53,7 +54,6 @@ HEADERS += \
     Modules/glwidget.h \
     Modules/pose6dof.h \
     Modules/project_common.h \
-    Modules/car.h \
     Modules/pose6dofqt.h \
     Modules/motiontracker.h \
     Modules/deschandler.h

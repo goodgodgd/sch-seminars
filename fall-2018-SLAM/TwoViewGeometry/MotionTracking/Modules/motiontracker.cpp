@@ -8,6 +8,7 @@ MotionTracker::MotionTracker()
 
     keyfDesc = DescHandler::factory("orb", "flann");
     curfDesc = DescHandler::factory("orb", "flann");
+    DescHandler::enableDrawMatches(false);
 
     // camera matrix K
     cv::Mat frame;
@@ -23,7 +24,7 @@ MotionTracker::MotionTracker()
     std::cout << "camera matrix: " << std::endl << camK << std::endl;
 }
 
-void MotionTracker::setup()
+bool MotionTracker::setup()
 {
     // set keyframe first
     if(keyframe.empty())
@@ -31,12 +32,14 @@ void MotionTracker::setup()
         keyframe = curframe.clone();
         keyfDesc->detectAndCompute(keyframe);
         std::cout << "keyframe was set" << std::endl;
-        return;
+        return false;
     }
 
     // in the second, compute 3D points from essential matrix
     curPose = computePoseAndPoints(curframe, points3D);
     qDebug() << "setup pose" << curPose << "points" << points3D.size();
+    draw();
+    return true;
 }
 
 Pose6DofQt MotionTracker::computePoseAndPoints(cv::Mat curframe, std::vector<cv::Point3f>& recon3Dpts)
@@ -55,8 +58,8 @@ Pose6DofQt MotionTracker::computePoseAndPoints(cv::Mat curframe, std::vector<cv:
     Pose6DofQt pose = reconstruct(E, keyfpoints, curfpoints, matches, recon3Dpts);
 
     cv::Mat matchres = DescHandler::getResultingImg(600);
-    cv::imshow("match result", matchres);
-    cv::waitKey(10);
+//    cv::imshow("match result", matchres);
+//    cv::waitKey(10);
 
     // extract descriptors of inlier points
     std::vector<int> reconInds;
@@ -195,35 +198,38 @@ void MotionTracker::run()
         return;
     }
 
-//    curPose = computePoseByProjection(curframe, points3D);
-//    qDebug() << "current pose" << curPose;
+    curPose = computePoseByProjection(curframe, points3D);
+    qDebug() << "current pose" << curPose;
     draw();
 }
 
-Pose6DofQt MotionTracker::computePoseByProjection(cv::Mat curframe,
-        const std::vector<cv::Point3f>& points3D)
+Pose6DofQt MotionTracker::computePoseByProjection(cv::Mat curframe, const std::vector<cv::Point3f>& points3D)
 {
-    // TODO: 3D point와 이미지 점을 매칭해서 solvePnP에 입력해야함
+    std::vector<cv::DMatch> matches;
+    std::vector<cv::Point2f> keyfpoints;
+    std::vector<cv::Point2f> curfpoints;
 
-    // detect keypoints, compute descriptors, match current descriptors with keyframe's
-    curfDesc->detectAndCompute(curframe);
-    std::vector<cv::DMatch> matches = curfDesc->match(keyfDesc->getDescriptors(), 0.8f);
+    // find keypoints in current frame, match them with keyframe's keypoints and align them with matches
+    matchPoints(curframe, matches, keyfpoints, curfpoints);
 
-    // align keypoints from both images
-    std::vector<cv::KeyPoint> keyfpoints = keyfDesc->getKeypoints();
-    std::vector<cv::KeyPoint> curfpoints = curfDesc->getKeypoints();
-    std::vector<cv::Point2f> keyfpts_aligned, curfpts_aligned;
+    // inliers from points3D
+    std::vector<cv::Point3f> pointsInlier;
     for(auto& match: matches)
-    {
-        keyfpts_aligned.push_back(keyfpoints.at(match.trainIdx).pt);
-        curfpts_aligned.push_back(curfpoints.at(match.queryIdx).pt);
-    }
+        pointsInlier.push_back(points3D[match.trainIdx]);
+
+    std::cout << "matches keyframe " << matches.size() << " " << keyfDesc->getKeypoints().size()
+              << " points " << pointsInlier.size() << " " << points3D.size() << std::endl;
 
     cv::Mat dist_coeff = (cv::Mat_<double>(5, 1) << 0., 0., 0., 0., 0.);
     cv::Mat rvec, rmat, tvec;
-    cv::solvePnP(points3D, curfpts_aligned, camK, dist_coeff, rvec, tvec);
+    cv::solvePnPRansac(pointsInlier, curfpoints, camK, dist_coeff, rvec, tvec);
     cv::Rodrigues(rvec, rmat);
     return toPoseVector(rmat, tvec);
+
+    // draw matches
+    cv::Mat matchres = DescHandler::getResultingImg(600);
+//    cv::imshow("match result", matchres);
+//    cv::waitKey(10);
 }
 
 void MotionTracker::showImage(cv::Mat image, std::string wndname, int height)
