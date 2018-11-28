@@ -5,6 +5,9 @@ $$
 x^T_2Ex_1=0
 $$
 
+<a href="https://www.codecogs.com/eqnedit.php?latex=x^T_2Ex_1=0" target="_blank"><img src="https://latex.codecogs.com/gif.latex?x^T_2Ex_1=0" title="x^T_2Ex_1=0" /></a>
+
+
 2. Essential matrix와 Fundamantal matrix의 차이는?
 
 3. 임의의 NxM matrix A가 있을 때 A의 null space를 이루는(span) null vector들을 구하는 방법은?
