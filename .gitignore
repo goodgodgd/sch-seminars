@@ -2,4 +2,6 @@
 build-*
 *.user
 *.user*
+Open3D
+__pycache__
 
