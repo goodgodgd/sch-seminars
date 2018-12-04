@@ -56,6 +56,32 @@ ICP는 6단계의 알고리즘으로 쓸 수 있다.
 
 ## 3. Open3D Implemetation
 
+### Open3D
+대박 라이브러리 point cloud를 위한 모든 것이 다 있다. PCL 따위 이제 버려도 된다. (원래도 안썼지만)  
+
+http://www.open3d.org/  
+
+장점  
+- 약한 의존성: 
+  - 거의 이미지 입출력 라이브러리만 깔려있으면 된다. [우분투 의존성 참조](https://github.com/IntelVCL/Open3D/blob/master/util/scripts/install-deps-ubuntu.sh)
+  - 필요한 3rd party 라이브러리는 프로젝트 폴더에 내장되어 있다.
+- 거의 필요한게 다 있고 심지어 빠른듯 하다.
+  - point cloud로 하는 많은 기술들이 구현되어 있다. (graph optimization까지 ㄷㄷ)
+  - 특히 viewer가 마음에 든다. 파이썬에서도 point cloud viewer의 반응이 빠르다.
+  - glsl을 직접 구현한 효과인 듯
+- 코드가 깔끔하다.
+  - 사용하는 입장에서도 쉽게 되어있고 내부적인 소스코드도 간결하게 작성되었다.
+  - 이건 코드를 한줄씩 읽으며 공부해볼만 하다.
+- python / c++ 모두 지원
+  - python에서 point cloud를 쉽게 다룰수 있다!!
+  - c++ 코드도 PCL과 비교할 수 없이 간결하며 아름답다.
+
+단점
+  - 이런걸 만드는 사람들을 보면 패배감이 느껴진다.
+
+
+... ICP 코드나 보자.
+
 ```cpp
 RegistrationResult RegistrationICP(const PointCloud &source,
         const PointCloud &target, double max_correspondence_distance,
