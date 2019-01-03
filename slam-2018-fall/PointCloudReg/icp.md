@@ -2,6 +2,8 @@
 
 ICP는 두 개의 point cloud가 비슷한 모양을 가질 때 이 둘을 정합하는 (registration) 상대적인 pose (rotation + translation = rigid transformation)을 찾는 알고리즘이다. 단순히 거리 기반으로 point-to-point correspondence를 찾아 그 거리를 최소화하도록 최적화 하는 과정을 반복하기 때문에 이러한 이름이 붙었다.
 
+
+
 ## 1. Theory
 ![alt text](./assets/icp-theory1.png)
 ![alt text](./assets/icp-theory2.png)
