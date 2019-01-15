@@ -4,4 +4,5 @@ build-*
 *.user*
 Open3D
 __pycache__
+igdata
 
