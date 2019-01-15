@@ -2,6 +2,8 @@
 #define BA3DCONSTRUCTOR_H
 
 #include <exampleconstructor.h>
+#include <math.h>
+#include <map>
 
 class BA3dConstructor : public ExampleConstructor
 {
@@ -20,6 +22,7 @@ private:
     g2o::VertexSE3Expmap* createPoseVertex(g2o::SE3Quat& pose);
 
     std::vector<g2o::SE3Quat> gt_poses;
+    double traj_radius;
     Eigen::Vector3d center;
 };
 

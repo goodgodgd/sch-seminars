@@ -3,14 +3,15 @@
 BA3dConstructor::BA3dConstructor()
     : ExampleConstructor()
 {
-    center = Eigen::Vector3d(1,2,0);
+    traj_radius = 2.;
+    center = Eigen::Vector3d(1., traj_radius, 0.);
 }
 
 void BA3dConstructor::construct()
 {
     addPoseVertices();
     addPointVertices();
-    addEdgePosePose();
+    // add edges only from points
     addEdgePosePoint();
 
     // applyNoise
@@ -43,6 +44,8 @@ void BA3dConstructor::addFixedPoseVertices()
     vtx2->setFixed(true);
     optimizer.addVertex(vtx2);
     gt_poses.push_back(pose);
+
+    // add edge between 0 and 1
 }
 
 void BA3dConstructor::addVariablePoseVertices()
@@ -51,14 +54,18 @@ void BA3dConstructor::addVariablePoseVertices()
     const int N_NODES = 10;
     double angle = PI/double(N_NODES);
     Eigen::Quaterniond q = Eigen::AngleAxisd(angle, Eigen::Vector(0,0,1));
-    Eigen::Vector3d trans;
+    Eigen::Vector3d trans(traj_radius*sin(angle), traj_radius - traj_radius*cos(angle));
     g2o::SE3Quat relpose(q, trans);
 
-    for(int i=0; i<10; i++)
+    for(int i=0; i<N_NODES; i++)
     {
-        // last pose *= relpose
-        // add vertex
+        g2o::SE3Quat pose = gt_poses.back() * relpose;
+        g2o::VertexSE3Expmap* vtx1 = createPoseVertex(pose);
+        optimizer.addVertex(vtx1);
+        gt_poses.push_back(pose);
+        // add edge between poses
     }
+    // the last pose supposed to be the same as gt_poses[1]
 }
 
 g2o::VertexSE3Expmap* BA3dConstructor::createPoseVertex(g2o::SE3Quat& pose)
