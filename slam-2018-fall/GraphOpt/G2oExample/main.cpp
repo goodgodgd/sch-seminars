@@ -4,6 +4,12 @@
 
 int main()
 {
+    // TODOs
+    // 1. add noise in graph constructor
+    // 2. rename G2oFactory -> OptimizerFactory, optimizerFactory -> factory()
+    // 3. rename graphFactory() -> factory()
+    // 4. make "simple" example within main.cpp
+
     G2oConfig options;
     options.sovler_type = SolverType::CHOLMOD;
     options.block_type = BlockType::SE3;
