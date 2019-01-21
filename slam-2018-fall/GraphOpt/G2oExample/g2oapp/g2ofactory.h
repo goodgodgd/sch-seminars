@@ -2,6 +2,8 @@
 #define G2OFACTORY_H
 
 #include <iostream>
+#include "g2oconfig.h"
+
 #include "g2o/core/sparse_optimizer.h"
 #include "g2o/core/block_solver.h"
 #include "g2o/core/optimization_algorithm_gauss_newton.h"
@@ -17,39 +19,6 @@
 G2O_USE_TYPE_GROUP(slam2d);
 G2O_USE_TYPE_GROUP(slam3d);
 
-enum class SolverType
-{
-    DENSE,
-    CHOLMOD,
-    CSPARSE,
-};
-
-enum class BlockType
-{
-    VAR,
-    SE3,
-    Sim3,
-    SE2,
-};
-
-enum class AlgorithmType
-{
-    Levenberg,
-    GaussNewton,
-};
-
-
-struct G2oOptions
-{
-    SolverType sovler_type;
-    BlockType block_type;
-    AlgorithmType algorithm;
-    bool verbosity;
-    Eigen::Vector3d tran_noise;
-    Eigen::Vector3d quat_noise;
-    Eigen::Vector3d point_noise;
-    Eigen::Vector2d pixel_noise;
-};
 
 class G2oFactory
 {
@@ -62,7 +31,7 @@ class G2oFactory
     typedef g2o::OptimizationAlgorithmGaussNewton   GaussNewton;
 
 public:
-    static g2o::SparseOptimizer* optimizerFactory(G2oOptions& options)
+    static g2o::SparseOptimizer* optimizerFactory(G2oConfig& options)
     {
         g2o::OptimizationAlgorithm* algorithm;
         if(options.block_type == BlockType::VAR)
