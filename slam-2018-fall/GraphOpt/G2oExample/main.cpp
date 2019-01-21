@@ -18,9 +18,7 @@ int main()
     g2o::SparseOptimizer* optimizer = G2oFactory::optimizerFactory(options);
     GraphConstructor* graph_constr = ExampleFactory::graphFactory(options);
 
-    graph_constr->setOptimizer(optimizer);
-    graph_constr->construct();
-
+    graph_constr->construct(optimizer, options);
     optimizer->initializeOptimization();
 
     std::string filename;
