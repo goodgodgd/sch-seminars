@@ -13,8 +13,8 @@
 #include "g2o/types/slam3d/edge_se3.h"
 #include "g2o/types/sba/types_six_dof_expmap.h"
 
-G2O_USE_TYPE_GROUP(slam2d);
-G2O_USE_TYPE_GROUP(slam3d);
+//G2O_USE_TYPE_GROUP(slam2d);
+//G2O_USE_TYPE_GROUP(slam3d);
 
 
 class ExampleConstructor

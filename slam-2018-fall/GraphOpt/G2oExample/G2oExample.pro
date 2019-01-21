@@ -14,7 +14,7 @@ LIBRARY_ROOT=/home/ian/mylib/deploy
 
 # import suitesparse
 INCLUDEPATH += /usr/include/suitesparse
-LIBS += -lsuitesparseconfig -lcholmod
+LIBS += -lsuitesparseconfig -lcholmod -lcxsparse
 
 # import g2o
 INCLUDEPATH += $$LIBRARY_ROOT/g2o/include
@@ -48,4 +48,5 @@ HEADERS += \
     ba3dconstructor.h \
     g2oapp/g2ofactory.h \
     g2oapp/graphconstructor.h \
-    g2oapp/se3loopconstructor.h
+    g2oapp/se3loopconstructor.h \
+    g2oapp/g2oall.h

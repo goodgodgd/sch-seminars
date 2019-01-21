@@ -4,6 +4,6 @@
 class GraphConstructor
 {
 
-}
+};
 
 #endif // GRAPHCONSTRUCTOR_H
