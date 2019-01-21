@@ -9,72 +9,105 @@ BA3dConstructor::BA3dConstructor()
 
 void BA3dConstructor::construct()
 {
-    setPoseVertices();
+    // add pose vertices at (0,0,0) and (1,0,0)
+    setInitPoseVertices();
+    // add pose vertices around circle
+    setCirclePoseVertices();
+    // add edges between pose edges
+    setEdgesBtwPoses();
+
     addPointVertices();
-    // add edges only from points
     addEdgePosePoint();
 
     // applyNoise
+
 }
 
-void BA3dConstructor::setPoseVertices()
+void BA3dConstructor::setInitPoseVertices()
 {
-    // add pose vertices at (0,0,0) and (1,0,0)
-    setFixedPoseVertices();
-    // add pose vertices along circle on x-y plane
-    addVariablePoseVertices();
-}
+    Eigen::Vector3d tran;
+    Eigen::Quaterniond quat;
 
-void BA3dConstructor::setFixedPoseVertices()
-{
     // first vertex at origin
-    Eigen::Vector3d trans(0,0,0);
-    Eigen::Quaterniond q;
-    q.setIdentity();
-    g2o::SE3Quat pose(q,trans);
-    addPoseVertex(pose, true);
+    tran = Eigen::Vector3d(0,0,0);
+    quat.setIdentity();
+    addPoseVertex(quat, tran, true);
 
     // second vertex at 1,0,0
-    pose.setTranslation(Eigen::Vector3d(center(0),0,0));
-    addPoseVertex(pose, true);
-
-    // add edge between 0 and 1
-
+    tran = Eigen::Vector3d(center(0),0,0);
+    quat.setIdentity();
+    addPoseVertex(quat, tran, true);
 }
 
-void BA3dConstructor::addVariablePoseVertices()
+void BA3dConstructor::setCirclePoseVertices()
 {
     const double PI = 3.141592653589793;
-    const int N_NODES = 10;
-    double angle = PI/double(N_NODES);
-    Eigen::Quaterniond q;
-    q = Eigen::AngleAxisd(angle, Eigen::Vector3d(0,0,1));
-    Eigen::Vector3d trans(traj_radius*sin(angle), traj_radius - traj_radius*cos(angle), 0.);
-    g2o::SE3Quat relpose(q, trans);
+    const int CIRCLE_NODES = 10;
+    double angle = 2.*PI/double(CIRCLE_NODES);
+    Eigen::Quaterniond quat;
+    quat = Eigen::AngleAxisd(angle, Eigen::Vector3d(0,0,1));
+    Eigen::Vector3d tran = Eigen::Vector3d(traj_radius*sin(angle), traj_radius - traj_radius*cos(angle), 0.);
+    g2o::SE3Quat relpose(quat, tran);
 
-    for(int i=0; i<N_NODES; i++)
+    // add vertices around a circle centered at "center" with radius
+    for(int i=0; i<CIRCLE_NODES; i++)
     {
-        g2o::SE3Quat pose = gt_poses.back() * relpose;
-        addPoseVertex(pose);
-        // add edge between poses
+        g2o::SE3Quat abspose = gt_poses.back() * relpose;
+        addPoseVertex(abspose);
     }
+}
+
+void BA3dConstructor::setEdgesBtwPoses()
+{
+    g2o::SE3Quat edge;
+
+    // add edge between poses
+    for(size_t i=1; i<gt_poses.size(); i++)
+    {
+        // edge: pose[i-1] w.r.t pose[i]
+        edge = gt_poses[i-1].inverse() * gt_poses[i];
+        addEdgePosePose(i-1, i, edge);
+    }
+
     // the last pose supposed to be the same as gt_poses[1]
+    edge = gt_poses[1].inverse() * gt_poses.back();
+    std::cout << "relpose between 0 and last:" << std::endl
+              << edge.to_homogeneous_matrix() << std::endl;
+    addEdgePosePose(1, int(gt_poses.size()-1), edge);
+}
+
+
+void BA3dConstructor::addPoseVertex(Eigen::Quaterniond quat, Eigen::Vector3d tran, bool set_fixed)
+{
+    g2o::SE3Quat pose(quat, tran);
+    addPoseVertex(pose, set_fixed);
 }
 
 void BA3dConstructor::addPoseVertex(g2o::SE3Quat& pose, bool set_fixed)
 {
-//    g2o::VertexSE3Expmap* vtx = createPoseVertex(pose);
-//    vtx->setFixed(set_fixed);
-//    optimizer->addVertex(vtx);
-//    gt_poses.push_back(pose);
+    std::cout << "add pose: t=" << pose.translation().transpose()
+              << " r=" << pose.rotation().coeffs().transpose() << std::endl;
+    g2o::VertexSE3* v_se3 = new g2o::VertexSE3;
+    v_se3->setId(getNewID());
+    v_se3->setEstimate(pose);
+    v_se3->setFixed(set_fixed);
+    optimizer->addVertex(v_se3);
+    gt_poses.push_back(pose);
 }
 
-g2o::VertexSE3Expmap* BA3dConstructor::createPoseVertex(g2o::SE3Quat& pose)
+void BA3dConstructor::addEdgePosePose(int id0, int id1, g2o::SE3Quat& relpose)
 {
-//    g2o::VertexSE3Expmap* v_se3 = new g2o::VertexSE3Expmap;
-//    v_se3->setId(getNewID());
-//    v_se3->setEstimate(pose);
-//    return v_se3;
+    std::cout << "add edge: id0=" << id0 << ", id1" << id1
+              << ", t=" << relpose.translation().transpose()
+              << ", r=" << relpose.rotation().coeffs().transpose() << std::endl;
+    g2o::EdgeSE3* edge = new g2o::EdgeSE3;
+    edge->setVertex(0, optimizer->vertices().find(id0)->second);
+    edge->setVertex(1, optimizer->vertices().find(id1)->second);
+    // !! Note: edge measurement use inverse of id0 ->
+    edge->setMeasurement(relpose);
+    Eigen::MatrixXd info_matrix = Eigen::MatrixXd::Identity(6,6) * 10.;
+    edge->setInformation(info_matrix);
+    optimizer->addEdge(edge);
 }
 
 void BA3dConstructor::addPointVertices()
@@ -82,10 +115,6 @@ void BA3dConstructor::addPointVertices()
 
 }
 
-void BA3dConstructor::addEdgePosePose()
-{
-
-}
 
 void BA3dConstructor::addEdgePosePoint()
 {

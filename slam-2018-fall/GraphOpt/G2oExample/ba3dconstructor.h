@@ -1,9 +1,9 @@
 #ifndef BA3DCONSTRUCTOR_H
 #define BA3DCONSTRUCTOR_H
 
-#include <exampleconstructor.h>
 #include <math.h>
 #include <map>
+#include "exampleconstructor.h"
 
 class BA3dConstructor : public ExampleConstructor
 {
@@ -12,15 +12,17 @@ public:
     virtual void construct();
 
 private:
-    void setPoseVertices();
+    void setInitPoseVertices();
+    void setCirclePoseVertices();
+    void setEdgesBtwPoses();
+
+    void addPoseVertex(Eigen::Quaterniond quat, Eigen::Vector3d tran, bool set_fixed=false);
+    void addPoseVertex(g2o::SE3Quat& pose, bool set_fixed=false);
+    void addEdgePosePose(int id0, int id1, g2o::SE3Quat &relpose);
+
     void addPointVertices();
-    void addEdgePosePose();
     void addEdgePosePoint();
 
-    void setFixedPoseVertices();
-    void addVariablePoseVertices();
-    void addPoseVertex(g2o::SE3Quat& pose, bool set_fixed=false);
-    g2o::VertexSE3Expmap* createPoseVertex(g2o::SE3Quat& pose);
 
     std::vector<g2o::SE3Quat> gt_poses;
     double traj_radius;

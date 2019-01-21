@@ -11,10 +11,14 @@ QMAKE_LFLAGS +=  -fopenmp
 DEFINES += PRJ_PATH=\\\"$$PWD\\\"
 
 LIBRARY_ROOT=/home/ian/mylib/deploy
+
+# import suitesparse
+INCLUDEPATH += /usr/include/suitesparse
+LIBS += -lsuitesparseconfig -lcholmod
+
 # import g2o
 INCLUDEPATH += $$LIBRARY_ROOT/g2o/include
 INCLUDEPATH += $$LIBRARY_ROOT/g2o/include/g2o/EXTERNAL/csparse
-INCLUDEPATH += /usr/include/suitesparse
 
 LIBS += -L$$LIBRARY_ROOT/g2o/lib
 # search .so files
@@ -36,8 +40,12 @@ INCLUDEPATH += /usr/include/eigen3
 
 SOURCES += \
         main.cpp \
-    ba3dconstructor.cpp
+    ba3dconstructor.cpp \
+    g2oapp/se3loopconstructor.cpp
 
 HEADERS += \
     exampleconstructor.h \
-    ba3dconstructor.h
+    ba3dconstructor.h \
+    g2oapp/g2ofactory.h \
+    g2oapp/graphconstructor.h \
+    g2oapp/se3loopconstructor.h
