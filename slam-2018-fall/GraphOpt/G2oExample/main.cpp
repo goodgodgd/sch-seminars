@@ -1,5 +1,4 @@
 #include <iostream>
-#include "ba3dconstructor.h"
 #include "g2oapp/g2ofactory.h"
 #include "g2oapp/examplefactory.h"
 

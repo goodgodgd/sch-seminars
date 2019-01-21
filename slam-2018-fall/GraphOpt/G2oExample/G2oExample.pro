@@ -40,12 +40,9 @@ INCLUDEPATH += /usr/include/eigen3
 
 SOURCES += \
         main.cpp \
-    ba3dconstructor.cpp \
     g2oapp/se3loopconstructor.cpp
 
 HEADERS += \
-    exampleconstructor.h \
-    ba3dconstructor.h \
     g2oapp/g2ofactory.h \
     g2oapp/graphconstructor.h \
     g2oapp/se3loopconstructor.h \

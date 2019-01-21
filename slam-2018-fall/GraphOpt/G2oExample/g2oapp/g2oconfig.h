@@ -1,6 +1,8 @@
 #ifndef G2OCONFIG_H
 #define G2OCONFIG_H
 
+#include <eigen3/Eigen/Eigen>
+
 enum class SolverType
 {
     DENSE,
