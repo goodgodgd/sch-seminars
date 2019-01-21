@@ -36,7 +36,6 @@ INCLUDEPATH += /usr/include/eigen3
 
 SOURCES += \
         main.cpp \
-    exampleconstructor.cpp \
     ba3dconstructor.cpp
 
 HEADERS += \

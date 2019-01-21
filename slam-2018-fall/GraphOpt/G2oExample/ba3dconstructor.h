@@ -12,13 +12,14 @@ public:
     virtual void construct();
 
 private:
-    void addPoseVertices();
+    void setPoseVertices();
     void addPointVertices();
     void addEdgePosePose();
     void addEdgePosePoint();
 
-    void addFixedPoseVertices();
+    void setFixedPoseVertices();
     void addVariablePoseVertices();
+    void addPoseVertex(g2o::SE3Quat& pose, bool set_fixed=false);
     g2o::VertexSE3Expmap* createPoseVertex(g2o::SE3Quat& pose);
 
     std::vector<g2o::SE3Quat> gt_poses;
