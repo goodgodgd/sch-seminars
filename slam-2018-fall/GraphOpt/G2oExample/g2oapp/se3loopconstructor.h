@@ -10,18 +10,19 @@ class SE3LoopConstructor: public GraphConstructor
 public:
     SE3LoopConstructor();
 
-    virtual void construct(g2o::SparseOptimizer* optim, G2oConfig& config);
+    virtual void construct(g2o::SparseOptimizer* _optimizer, G2oConfig& _config);
 
 private:
     void setInitPoseVertices();
     void setCirclePoseVertices();
-    void setEdgesBtwPoses(G2oConfig &config);
+    void setEdgesBtwPoses();
 
     void addPoseVertex(Eigen::Quaterniond quat, Eigen::Vector3d tran,
                        bool set_fixed=false);
     void addPoseVertex(g2o::SE3Quat& pose, bool set_fixed=false);
+    g2o::SE3Quat addNoisePoseMeasurement(const g2o::SE3Quat& srcpose);
     void addEdgePosePose(int id0, int id1,
-                         g2o::SE3Quat &relpose, G2oConfig &config);
+                         g2o::SE3Quat &relpose);
 
     std::vector<g2o::SE3Quat> gt_poses;
     double traj_radius;

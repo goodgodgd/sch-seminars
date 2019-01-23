@@ -36,8 +36,10 @@ struct G2oConfig
     AlgorithmType algorithm;
     GraphExample example;
     bool verbosity;
+    bool init_vtx;
+    bool edge_noise;
     Eigen::Vector3d tran_noise;
-    Eigen::Vector3d quat_noise;
+    Eigen::Vector4d quat_noise;
     Eigen::Vector3d point_noise;
     Eigen::Vector2d pixel_noise;
 };

@@ -4,7 +4,7 @@
 
 int main()
 {
-    // TODOs
+    // TODO
     // 1. add noise in graph constructor
     // 2. rename G2oFactory -> OptimizerFactory, optimizerFactory -> factory()
     // 3. rename graphFactory() -> factory()
@@ -16,8 +16,10 @@ int main()
     options.algorithm = AlgorithmType::Levenberg;
     options.example = GraphExample::SE3Loop;
     options.verbosity = true;
+    options.init_vtx = false;
+    options.edge_noise = true;
     options.tran_noise = Eigen::Vector3d(0.01, 0.01, 0.01);
-    options.quat_noise = Eigen::Vector3d(0.01, 0.01, 0.01);
+    options.quat_noise = Eigen::Vector4d(0.01, 0.01, 0.01, 0.01);
     options.point_noise = Eigen::Vector3d(0.01, 0.01, 0.01);
     options.pixel_noise = Eigen::Vector2d(0.1, 0.1);
 
@@ -31,7 +33,7 @@ int main()
     filename = std::string(PRJ_PATH) + "/../igdata/before_opt.g2o";
     optimizer->save(filename.c_str());
 
-    optimizer->optimize(10);
+    optimizer->optimize(100);
 
     filename = std::string(PRJ_PATH) + "/../igdata/after_opt.g2o";
     optimizer->save(filename.c_str());
