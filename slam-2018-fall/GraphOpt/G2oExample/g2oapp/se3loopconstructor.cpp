@@ -123,7 +123,6 @@ void SE3LoopConstructor::addEdgePosePose(int id0, int id1, g2o::SE3Quat& relpose
     g2o::EdgeSE3* edge = new g2o::EdgeSE3;
     edge->setVertex(0, optimizer->vertices().find(id0)->second);
     edge->setVertex(1, optimizer->vertices().find(id1)->second);
-    // !! Note: edge measurement use inverse of id0 -> id1
     edge->setMeasurement(relpose);
     Eigen::MatrixXd info_matrix = Eigen::MatrixXd::Identity(6,6) * 10.;
     edge->setInformation(info_matrix);
