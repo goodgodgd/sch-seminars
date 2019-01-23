@@ -4,12 +4,6 @@
 
 int main()
 {
-    // TODO
-    // 1. add noise in graph constructor
-    // 2. rename G2oFactory -> OptimizerFactory, optimizerFactory -> factory()
-    // 3. rename graphFactory() -> factory()
-    // 4. make "simple" example within main.cpp
-
     G2oConfig options;
     options.sovler_type = SolverType::CHOLMOD;
     options.block_type = BlockType::SE3;
@@ -24,7 +18,7 @@ int main()
     options.pixel_noise = Eigen::Vector2d(0.1, 0.1);
 
     g2o::SparseOptimizer* optimizer = G2oFactory::optimizerFactory(options);
-    GraphConstructor* graph_constr = ExampleFactory::graphFactory(options);
+    GraphConstructor* graph_constr = G2oFactory::graphFactory(options);
 
     graph_constr->construct(optimizer, options);
     optimizer->initializeOptimization();

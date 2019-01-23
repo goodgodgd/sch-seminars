@@ -47,5 +47,4 @@ HEADERS += \
     g2oapp/graphconstructor.h \
     g2oapp/se3loopconstructor.h \
     g2oapp/g2oconfig.h \
-    g2oapp/examplefactory.h \
     g2oapp/g2oall.h

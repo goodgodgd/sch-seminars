@@ -4,6 +4,7 @@
 #include <iostream>
 #include "g2oconfig.h"
 #include "g2oall.h"
+#include "se3loopconstructor.h"
 
 class G2oFactory
 {
@@ -16,6 +17,14 @@ class G2oFactory
     typedef g2o::OptimizationAlgorithmGaussNewton   GaussNewton;
 
 public:
+    static GraphConstructor* graphFactory(G2oConfig& config)
+    {
+        if(config.example == GraphExample::SE3Loop)
+            return new SE3LoopConstructor;
+        else
+            nullptr;
+    }
+
     static g2o::SparseOptimizer* optimizerFactory(G2oConfig& options)
     {
         g2o::OptimizationAlgorithm* algorithm;
@@ -64,7 +73,6 @@ public:
     }
 
 private:
-
     template <typename BSType, typename LSType, typename PMType>
     static std::unique_ptr<BSType> solverFactory(SolverType solver_type)
     {
