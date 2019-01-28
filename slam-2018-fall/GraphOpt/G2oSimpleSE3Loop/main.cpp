@@ -2,18 +2,18 @@
 
 #include "g2o/core/sparse_optimizer.h"
 #include "g2o/core/block_solver.h"
-#include "g2o/core/optimization_algorithm_gauss_newton.h"
-#include "g2o/core/optimization_algorithm_levenberg.h"
 #include "g2o/solvers/dense/linear_solver_dense.h"
-#include "g2o/solvers/csparse/linear_solver_csparse.h"
-#include "g2o/solvers/cholmod/linear_solver_cholmod.h"
+ #include "g2o/solvers/csparse/linear_solver_csparse.h"
+ #include "g2o/solvers/cholmod/linear_solver_cholmod.h"
+#include "g2o/core/optimization_algorithm_levenberg.h"
+ #include "g2o/core/optimization_algorithm_gauss_newton.h"
 #include "g2o/core/factory.h"
 #include "g2o/types/slam3d/vertex_se3.h"
 #include "g2o/types/slam3d/edge_se3.h"
-#include "g2o/types/sba/types_six_dof_expmap.h"
+// #include "g2o/types/sba/types_six_dof_expmap.h"
 
-G2O_USE_TYPE_GROUP(slam2d);
-G2O_USE_TYPE_GROUP(slam3d);
+// G2O_USE_TYPE_GROUP(slam2d);
+// G2O_USE_TYPE_GROUP(slam3d);
 
 
 int getNewID()
@@ -88,7 +88,7 @@ int main()
     // set variable vertices
     {
         const double PI = 3.141592653589793;
-        const int CIRCLE_NODES = 10;
+        const int CIRCLE_NODES = 8;
         const double CIRCLE_RADIUS = 2;
         double angle = 2.*PI/double(CIRCLE_NODES);
         Eigen::Quaterniond quat;
