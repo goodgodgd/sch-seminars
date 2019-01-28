@@ -4,7 +4,7 @@ SE3LoopConstructor::SE3LoopConstructor()
     : Slam3DConstructor()
 {
     traj_radius = 2.;
-    center = Eigen::Vector3d(1., traj_radius, 0.);
+    center = Eigen::Vector3d(2., traj_radius, 0.);
 }
 
 void SE3LoopConstructor::construct(g2o::SparseOptimizer* _optimizer, G2oConfig& _config)
@@ -28,18 +28,24 @@ void SE3LoopConstructor::createInitPoseVerts()
     // first vertex at origin
     tran = Eigen::Vector3d(0,0,0);
     quat.setIdentity();
-    addPoseVertex(quat, tran, true);
+    g2o::SE3Quat pose0(quat, tran);
+    // add vertex with estimate pose0 and set fixed
+    addPoseVertex(&pose0, true);
+    gt_poses.push_back(pose0);
 
     // second vertex at 1,0,0
     tran = Eigen::Vector3d(center(0),0,0);
     quat.setIdentity();
-    addPoseVertex(quat, tran, true);
+    g2o::SE3Quat pose1(quat, tran);
+    // add vertex with estimate pose1 and set fixed
+    addPoseVertex(&pose1, true);
+    gt_poses.push_back(pose1);
 }
 
 void SE3LoopConstructor::createCirclePoseVerts()
 {
     const double PI = 3.141592653589793;
-    const int CIRCLE_NODES = 10;
+    const int CIRCLE_NODES = 8;
     double angle = 2.*PI/double(CIRCLE_NODES);
     Eigen::Quaterniond quat;
     quat = Eigen::AngleAxisd(angle, Eigen::Vector3d(0,0,1));
@@ -50,7 +56,9 @@ void SE3LoopConstructor::createCirclePoseVerts()
     for(int i=0; i<CIRCLE_NODES; i++)
     {
         g2o::SE3Quat abspose = gt_poses.back() * relpose;
-        addPoseVertex(abspose);
+        // add vertex without estimate
+        addPoseVertex();
+        gt_poses.push_back(abspose);
     }
 }
 

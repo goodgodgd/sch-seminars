@@ -1,11 +1,8 @@
 #include "posepoint3dconstructor.h"
 
-
 PosePoint3DConstructor::PosePoint3DConstructor()
-    : Slam3DConstructor()
+    : SE3LoopConstructor()
 {
-    traj_radius = 2.;
-    center = Eigen::Vector3d(2., traj_radius, 0.);
 }
 
 void PosePoint3DConstructor::construct(g2o::SparseOptimizer* _optimizer, G2oConfig& _config)
@@ -22,67 +19,44 @@ void PosePoint3DConstructor::construct(g2o::SparseOptimizer* _optimizer, G2oConf
 
     // add point vertices above the poses
     createPointVerts();
-}
-
-void PosePoint3DConstructor::createInitPoseVerts()
-{
-    Eigen::Vector3d tran;
-    Eigen::Quaterniond quat;
-
-    // first vertex at origin
-    tran = Eigen::Vector3d(0,0,0);
-    quat.setIdentity();
-    addPoseVertex(quat, tran, true);
-
-    // second vertex at 1,0,0
-    tran = Eigen::Vector3d(center(0),0,0);
-    quat.setIdentity();
-    addPoseVertex(quat, tran, true);
-}
-
-void PosePoint3DConstructor::createCirclePoseVerts()
-{
-    const double PI = 3.141592653589793;
-    const int CIRCLE_NODES = 10;
-    double angle = 2.*PI/double(CIRCLE_NODES);
-    Eigen::Quaterniond quat;
-    quat = Eigen::AngleAxisd(angle, Eigen::Vector3d(0,0,1));
-    Eigen::Vector3d tran = Eigen::Vector3d(traj_radius*sin(angle), traj_radius - traj_radius*cos(angle), 0.);
-    g2o::SE3Quat relpose(quat, tran);
-
-    // add vertices around a circle centered at "center" with radius
-    for(int i=0; i<CIRCLE_NODES; i++)
-    {
-        g2o::SE3Quat abspose = gt_poses.back() * relpose;
-        addPoseVertex(abspose);
-    }
-}
-
-void PosePoint3DConstructor::setEdgesBtwPoses()
-{
-    g2o::SE3Quat relpose;
-
-    // add edge between poses
-    for(size_t i=1; i<gt_poses.size(); i++)
-    {
-        // relpose: pose[i-1] w.r.t pose[i]
-        relpose = gt_poses[i-1].inverse() * gt_poses[i];
-        if(config.edge_noise)
-            relpose = addNoisePoseMeasurement(relpose);
-        addEdgePosePose(i-1, i, relpose);
-    }
-
-    // the last pose supposed to be the same as gt_poses[1]
-    relpose = gt_poses[1].inverse() * gt_poses.back();
-    std::cout << "relpose between 0 and last:" << std::endl
-              << relpose.to_homogeneous_matrix() << std::endl;
-    if(config.edge_noise)
-        relpose = addNoisePoseMeasurement(relpose);
-    addEdgePosePose(1, int(gt_poses.size()-1), relpose);
+    // add edges between poses and points
+    setEdgesBtwPosePoint();
 }
 
 void PosePoint3DConstructor::createPointVerts()
 {
-    g2o::VertexPointXYZ* vp;
+    Eigen::Vector3d pt;
+    srand(100);
+
+    // generate random point within (0, 0, 5) ~ (4, 4, 10)
+    for(int y=0; y<5; y++)
+        for(int x=0; x<5; x++)
+        {
+            pt(0) = double(x);
+            pt(1) = double(x);
+            pt(2) = rand() % 5 + 5;
+            addPoint3DVertex(&pt);
+            gt_points.push_back(pt);
+        }
 }
 
+void PosePoint3DConstructor::setEdgesBtwPosePoint()
+{
+    const int firstPointIndex = int(gt_poses.size());
+    Eigen::Vector3d local_pt;
+
+    for(size_t i=0; i<gt_poses.size(); i++)
+    {
+        for(size_t k=0; k<gt_points.size(); k++)
+        {
+            local_pt = gt_poses[i].map(gt_points[k]);
+            // connect edge only if local x y coordinates are < 2
+            if(fabs(local_pt.x()) < 2. && fabs(local_pt.y()) < 2.)
+            {
+                if(config.edge_noise)
+                    local_pt = addNoisePointMeasurement(local_pt);
+                addEdgePosePoint(i, firstPointIndex + k, local_pt);
+            }
+        }
+    }
+}

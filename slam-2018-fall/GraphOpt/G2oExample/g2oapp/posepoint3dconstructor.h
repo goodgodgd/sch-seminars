@@ -2,23 +2,20 @@
 #define POSEPOINT3DCONSTRUCTOR_H
 
 #include <math.h>
-#include "slam3dconstructor.h"
+#include "se3loopconstructor.h"
+#include "g2o/types/sba/types_six_dof_expmap.h"
 
-class PosePoint3DConstructor: public Slam3DConstructor
+class PosePoint3DConstructor: public SE3LoopConstructor
 {
 public:
     PosePoint3DConstructor();
     virtual void construct(g2o::SparseOptimizer* _optimizer, G2oConfig& _config);
 
 private:
-    void createInitPoseVerts();
-    void createCirclePoseVerts();
-    void setEdgesBtwPoses();
     void createPointVerts();
+    void setEdgesBtwPosePoint();
 
-    double traj_radius;
-    Eigen::Vector3d center;
-
+    std::vector<Eigen::Vector3d> gt_points;
 };
 
 #endif // POSEPOINT3DCONSTRUCTOR_H

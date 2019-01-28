@@ -18,6 +18,7 @@ protected:
 
     double traj_radius;
     Eigen::Vector3d center;
+    std::vector<g2o::SE3Quat> gt_poses;
 };
 
 #endif // SE3LOOPCONSTRUCTOR_H

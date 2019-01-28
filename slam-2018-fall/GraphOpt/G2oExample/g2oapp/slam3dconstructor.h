@@ -10,13 +10,13 @@ public:
     Slam3DConstructor() : GraphConstructor() {}
 
 protected:
+    void addPoseVertex(g2o::SE3Quat* pose=nullptr, bool set_fixed=false);
     g2o::SE3Quat addNoisePoseMeasurement(const g2o::SE3Quat& srcpose);
-    void addEdgePosePose(int id0, int id1, g2o::SE3Quat &relpose);
-    void addPoseVertex(Eigen::Quaterniond quat, Eigen::Vector3d tran,
-                       bool set_fixed=false);
-    void addPoseVertex(g2o::SE3Quat& pose, bool set_fixed=false);
+    void addEdgePosePose(int id0, int id1, const g2o::SE3Quat &relpose);
 
-    std::vector<g2o::SE3Quat> gt_poses;
+    void addPoint3DVertex(Eigen::Vector3d* pt, bool set_fixed=false);
+    Eigen::Vector3d addNoisePointMeasurement(const Eigen::Vector3d& srcpt);
+    void addEdgePosePoint(int poseid, int ptid, const Eigen::Vector3d& relpt);
 };
 
 #endif // SLAM3DCONSTRUCTOR_H
