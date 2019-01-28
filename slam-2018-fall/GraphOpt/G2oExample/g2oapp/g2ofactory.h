@@ -2,8 +2,20 @@
 #define G2OFACTORY_H
 
 #include <iostream>
+#include "g2o/core/block_solver.h"
+// solver options
+#include "g2o/solvers/dense/linear_solver_dense.h"
+#include "g2o/solvers/csparse/linear_solver_csparse.h"
+#include "g2o/solvers/cholmod/linear_solver_cholmod.h"
+// optmization options
+#include "g2o/core/optimization_algorithm_gauss_newton.h"
+#include "g2o/core/optimization_algorithm_levenberg.h"
+
+//#include "g2o/core/factory.h"
+//G2O_USE_TYPE_GROUP(slam2d);
+//G2O_USE_TYPE_GROUP(slam3d);
+
 #include "g2oconfig.h"
-#include "g2oall.h"
 #include "se3loopconstructor.h"
 
 class G2oFactory

@@ -40,11 +40,16 @@ INCLUDEPATH += /usr/include/eigen3
 
 SOURCES += \
         main.cpp \
-    g2oapp/se3loopconstructor.cpp
+    g2oapp/se3loopconstructor.cpp \
+    g2oapp/graphconstructor.cpp \
+    g2oapp/posepoint3dconstructor.cpp \
+    g2oapp/slam3dconstructor.cpp
 
 HEADERS += \
     g2oapp/g2ofactory.h \
     g2oapp/graphconstructor.h \
     g2oapp/se3loopconstructor.h \
     g2oapp/g2oconfig.h \
-    g2oapp/g2oall.h
+    g2oapp/g2oall.h \
+    g2oapp/posepoint3dconstructor.h \
+    g2oapp/slam3dconstructor.h

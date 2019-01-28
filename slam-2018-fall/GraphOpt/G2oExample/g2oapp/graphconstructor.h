@@ -2,7 +2,7 @@
 #define GRAPHCONSTRUCTOR_H
 
 #include <iostream>
-#include "g2oall.h"
+#include "g2o/core/sparse_optimizer.h"
 #include "g2oconfig.h"
 
 class GraphConstructor

@@ -1,23 +1,24 @@
-#ifndef SE3LOOPCONSTRUCTOR_H
-#define SE3LOOPCONSTRUCTOR_H
+#ifndef POSEPOINT3DCONSTRUCTOR_H
+#define POSEPOINT3DCONSTRUCTOR_H
 
 #include <math.h>
 #include "slam3dconstructor.h"
 
-class SE3LoopConstructor: public Slam3DConstructor
+class PosePoint3DConstructor: public Slam3DConstructor
 {
 public:
-    SE3LoopConstructor();
-
+    PosePoint3DConstructor();
     virtual void construct(g2o::SparseOptimizer* _optimizer, G2oConfig& _config);
 
-protected:
+private:
     void createInitPoseVerts();
     void createCirclePoseVerts();
     void setEdgesBtwPoses();
+    void createPointVerts();
 
     double traj_radius;
     Eigen::Vector3d center;
+
 };
 
-#endif // SE3LOOPCONSTRUCTOR_H
+#endif // POSEPOINT3DCONSTRUCTOR_H

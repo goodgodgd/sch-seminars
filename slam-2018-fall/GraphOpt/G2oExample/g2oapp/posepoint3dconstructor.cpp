@@ -1,13 +1,14 @@
-#include "se3loopconstructor.h"
+#include "posepoint3dconstructor.h"
 
-SE3LoopConstructor::SE3LoopConstructor()
+
+PosePoint3DConstructor::PosePoint3DConstructor()
     : Slam3DConstructor()
 {
     traj_radius = 2.;
-    center = Eigen::Vector3d(1., traj_radius, 0.);
+    center = Eigen::Vector3d(2., traj_radius, 0.);
 }
 
-void SE3LoopConstructor::construct(g2o::SparseOptimizer* _optimizer, G2oConfig& _config)
+void PosePoint3DConstructor::construct(g2o::SparseOptimizer* _optimizer, G2oConfig& _config)
 {
     optimizer = _optimizer;
     config = _config;
@@ -18,9 +19,12 @@ void SE3LoopConstructor::construct(g2o::SparseOptimizer* _optimizer, G2oConfig& 
     createCirclePoseVerts();
     // add edges between pose edges
     setEdgesBtwPoses();
+
+    // add point vertices above the poses
+    createPointVerts();
 }
 
-void SE3LoopConstructor::createInitPoseVerts()
+void PosePoint3DConstructor::createInitPoseVerts()
 {
     Eigen::Vector3d tran;
     Eigen::Quaterniond quat;
@@ -36,7 +40,7 @@ void SE3LoopConstructor::createInitPoseVerts()
     addPoseVertex(quat, tran, true);
 }
 
-void SE3LoopConstructor::createCirclePoseVerts()
+void PosePoint3DConstructor::createCirclePoseVerts()
 {
     const double PI = 3.141592653589793;
     const int CIRCLE_NODES = 10;
@@ -54,7 +58,7 @@ void SE3LoopConstructor::createCirclePoseVerts()
     }
 }
 
-void SE3LoopConstructor::setEdgesBtwPoses()
+void PosePoint3DConstructor::setEdgesBtwPoses()
 {
     g2o::SE3Quat relpose;
 
@@ -76,3 +80,9 @@ void SE3LoopConstructor::setEdgesBtwPoses()
         relpose = addNoisePoseMeasurement(relpose);
     addEdgePosePose(1, int(gt_poses.size()-1), relpose);
 }
+
+void PosePoint3DConstructor::createPointVerts()
+{
+    g2o::VertexPointXYZ* vp;
+}
+
