@@ -56,8 +56,10 @@ void SE3LoopConstructor::createCirclePoseVerts()
     for(int i=0; i<CIRCLE_NODES; i++)
     {
         g2o::SE3Quat abspose = gt_poses.back() * relpose;
-        // add vertex without estimate
-        addPoseVertex();
+        if(config.init_vtx)
+            addPoseVertex(&abspose);
+        else
+            addPoseVertex();
         gt_poses.push_back(abspose);
     }
 }
@@ -78,9 +80,7 @@ void SE3LoopConstructor::setEdgesBtwPoses()
 
     // the last pose supposed to be the same as gt_poses[1]
     relpose = gt_poses[1].inverse() * gt_poses.back();
-    std::cout << "[setEdgesBtwPoses] loop closing between 0 and last:" << std::endl
-              << "  t=" << relpose.translation().transpose()
-              << ", r=" << relpose.rotation().coeffs().transpose() << std::endl;
+    print_se3(relpose, "[setEdgesBtwPoses] loop closing between 0 and last:");
     if(config.edge_noise)
         relpose = addNoisePoseMeasurement(relpose);
     addEdgePosePose(1, int(gt_poses.size()-1), relpose);

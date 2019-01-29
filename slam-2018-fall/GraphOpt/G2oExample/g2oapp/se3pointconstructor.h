@@ -1,13 +1,13 @@
-#ifndef POSEPOINT3DCONSTRUCTOR_H
-#define POSEPOINT3DCONSTRUCTOR_H
+#ifndef SE3POINTCONSTRUCTOR_H
+#define SE3POINTCONSTRUCTOR_H
 
 #include <math.h>
 #include "se3loopconstructor.h"
 
-class PosePoint3DConstructor: public SE3LoopConstructor
+class Se3PointConstructor: public SE3LoopConstructor
 {
 public:
-    PosePoint3DConstructor();
+    Se3PointConstructor();
     virtual void construct(g2o::SparseOptimizer* _optimizer, G2oConfig& _config);
 
 private:
@@ -17,4 +17,4 @@ private:
     std::vector<Eigen::Vector3d> gt_points;
 };
 
-#endif // POSEPOINT3DCONSTRUCTOR_H
+#endif // SE3POINTCONSTRUCTOR_H

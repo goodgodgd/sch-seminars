@@ -1,11 +1,11 @@
-#include "posepoint3dconstructor.h"
+#include "se3pointconstructor.h"
 
-PosePoint3DConstructor::PosePoint3DConstructor()
+Se3PointConstructor::Se3PointConstructor()
     : SE3LoopConstructor()
 {
 }
 
-void PosePoint3DConstructor::construct(g2o::SparseOptimizer* _optimizer, G2oConfig& _config)
+void Se3PointConstructor::construct(g2o::SparseOptimizer* _optimizer, G2oConfig& _config)
 {
     optimizer = _optimizer;
     config = _config;
@@ -24,7 +24,7 @@ void PosePoint3DConstructor::construct(g2o::SparseOptimizer* _optimizer, G2oConf
     setEdgesBtwPosePoint();
 }
 
-void PosePoint3DConstructor::createPointVerts()
+void Se3PointConstructor::createPointVerts()
 {
     Eigen::Vector3d pt;
     srand(100);
@@ -36,12 +36,16 @@ void PosePoint3DConstructor::createPointVerts()
             pt(0) = double(x);
             pt(1) = double(y);
             pt(2) = rand() % 5 + 5;
-            addPoint3DVertex(&pt);
+            // not providing initial state
+            if(config.init_vtx)
+                addPoint3DVertex(&pt);
+            else
+                addPoint3DVertex();
             gt_points.push_back(pt);
         }
 }
 
-void PosePoint3DConstructor::setEdgesBtwPosePoint()
+void Se3PointConstructor::setEdgesBtwPosePoint()
 {
     const int firstPointIndex = int(gt_poses.size());
     Eigen::Vector3d local_pt;

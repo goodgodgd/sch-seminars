@@ -17,7 +17,7 @@
 
 #include "g2oconfig.h"
 #include "se3loopconstructor.h"
-#include "posepoint3dconstructor.h"
+#include "se3pointconstructor.h".h"
 
 class G2oFactory
 {
@@ -35,7 +35,7 @@ public:
         if(config.example == GraphExample::SE3Only)
             return new SE3LoopConstructor;
         else if(config.example == GraphExample::SE3Point)
-            return new PosePoint3DConstructor;
+            return new Se3PointConstructor;
         else
             nullptr;
     }

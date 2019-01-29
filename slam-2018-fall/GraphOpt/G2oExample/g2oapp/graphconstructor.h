@@ -6,7 +6,6 @@
 #include "g2o/core/sparse_optimizer.h"
 
 #include "g2oconfig.h"
-#include "stream_operators.h"
 
 class GraphConstructor
 {

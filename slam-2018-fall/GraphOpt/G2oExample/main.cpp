@@ -9,6 +9,7 @@ int main()
     options.algorithm = AlgorithmType::Levenberg;
     options.example = GraphExample::SE3Point;
     options.verbosity = true;
+    options.init_vtx = true;
     options.edge_noise = true;
     options.tran_noise = Eigen::Vector3d(0.01, 0.01, 0.01);
     options.quat_noise = Eigen::Vector4d(0.01, 0.01, 0.01, 0.01);
