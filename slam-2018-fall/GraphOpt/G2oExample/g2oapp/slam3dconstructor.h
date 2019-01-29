@@ -22,6 +22,7 @@ protected:
 
     void print_se3(const g2o::SE3Quat pose, const std::string heading)
     {
+        if(!config.verbosity) return;
         Eigen::IOFormat OctaveFmt(4, 0, ", ", ";\n", "", "", "[", "]");
         std::cout << heading << "t=" << pose.translation().transpose().format(OctaveFmt)
             << ", r=" << pose.rotation().coeffs().transpose().format(OctaveFmt)
@@ -30,6 +31,7 @@ protected:
 
     void print_vec3(const Eigen::Vector3d vec, const std::string heading, bool linebreak)
     {
+        if(!config.verbosity) return;
         Eigen::IOFormat OctaveFmt(4, 0, ", ", ";\n", "", "", "[", "]");
         std::cout << heading << "t=" << vec.transpose().format(OctaveFmt);
         if(linebreak)
