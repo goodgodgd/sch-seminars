@@ -4,8 +4,7 @@
 void Slam3DConstructor::addPoseVertex(g2o::SE3Quat *pose, bool set_fixed)
 {
     if(pose)
-        std::cout << "[addPoseVertex] t=" << pose->translation().transpose()
-              << ", r=" << pose->rotation().coeffs().transpose() << std::endl;
+        print_se3(*pose, "[addPoseVertex] ");
     else
         assert(!set_fixed);
 
@@ -19,9 +18,7 @@ void Slam3DConstructor::addPoseVertex(g2o::SE3Quat *pose, bool set_fixed)
 
 g2o::SE3Quat Slam3DConstructor::addNoisePoseMeasurement(const g2o::SE3Quat& srcpose)
 {
-    std::cout << "[addNoisePoseMeasurement] before pose: t="
-              << srcpose.translation().transpose()
-              << ", r=" << srcpose.rotation().coeffs().transpose() << std::endl;
+    print_se3(srcpose, "[addNoisePoseMeasurement] before pose: ");
     Eigen::Vector3d randv3 = Eigen::Vector3d::Random() - Eigen::Vector3d::Constant(0.5);
     Eigen::Vector3d tran_w_noise = srcpose.translation()
             + config.tran_noise.cwiseProduct(randv3);
@@ -33,17 +30,14 @@ g2o::SE3Quat Slam3DConstructor::addNoisePoseMeasurement(const g2o::SE3Quat& srcp
 
     g2o::SE3Quat pose_w_noise(quat_w_noise, tran_w_noise);
     pose_w_noise.normalizeRotation();
-    std::cout << "      after: t="  << pose_w_noise.translation().transpose()
-              << ", r=" << pose_w_noise.rotation().coeffs().transpose() << std::endl;
+    print_se3(pose_w_noise, "    after pose: ");
     return pose_w_noise;
 }
 
 void Slam3DConstructor::addEdgePosePose(int id0, int id1, const g2o::SE3Quat &relpose)
 {
-    std::cout << "[addEdgePosePose] id0=" << id0 << ", id1=" << id1
-              << ", t=" << relpose.translation().transpose()
-              << ", r=" << relpose.rotation().coeffs().transpose() << std::endl;
-
+    std::cout << "[addEdgePosePose] id0=" << id0 << ", id1=" << id1;
+    print_se3(relpose, ", ");
     g2o::EdgeSE3* edge = new g2o::EdgeSE3;
     edge->setVertex(0, optimizer->vertices().find(id0)->second);
     edge->setVertex(1, optimizer->vertices().find(id1)->second);
@@ -58,10 +52,17 @@ void Slam3DConstructor::addEdgePosePose(int id0, int id1, const g2o::SE3Quat &re
 }
 
 // ---------- for point vertex ----------
+void Slam3DConstructor::setParameter()
+{
+    g2o::ParameterSE3Offset* cameraOffset = new g2o::ParameterSE3Offset;
+    cameraOffset->setId(0);
+    optimizer->addParameter(cameraOffset);
+}
+
 void Slam3DConstructor::addPoint3DVertex(Eigen::Vector3d* pt, bool set_fixed)
 {
     if(pt)
-        std::cout << "[addPoint3DVertex]: " << *pt << std::endl;
+        print_vec3(*pt, "[addPoint3DVertex]: ", true);
     else
         assert(!set_fixed);
 
@@ -77,15 +78,15 @@ Eigen::Vector3d Slam3DConstructor::addNoisePointMeasurement(const Eigen::Vector3
 {
     Eigen::Vector3d randv3 = Eigen::Vector3d::Random() - Eigen::Vector3d::Constant(0.5);
     Eigen::Vector3d pt_w_noise = srcpt + config.point_noise.cwiseProduct(randv3);
-    std::cout << "[addNoisePointMeasurement] before: " << srcpt
-              << ", after: " << pt_w_noise << std::endl;
+    print_vec3(srcpt, "[addNoisePointMeasurement]: before", false);
+    print_vec3(pt_w_noise, ", after", true);
     return pt_w_noise;
 }
 
 void Slam3DConstructor::addEdgePosePoint(int poseid, int ptid, const Eigen::Vector3d& relpt)
 {
-    std::cout << "[addEdgePosePoint] poseid=" << poseid << ", ptid=" << ptid
-              << ", relpt=" << relpt << std::endl;
+    std::cout << "[addEdgePosePoint] poseid=" << poseid << ", ptid=" << ptid;
+    print_vec3(relpt, ", relpt", true);
 
     g2o::EdgeSE3PointXYZ* edge = new g2o::EdgeSE3PointXYZ;
     edge->setVertex(0, optimizer->vertices().find(poseid)->second);
@@ -95,5 +96,6 @@ void Slam3DConstructor::addEdgePosePoint(int poseid, int ptid, const Eigen::Vect
     for(int i=0; i<3; i++)
         info_matrix(i, i) = 1. / config.point_noise(i);
     edge->setInformation(info_matrix);
+    edge->setParameterId(0, 0);
     optimizer->addEdge(edge);
 }

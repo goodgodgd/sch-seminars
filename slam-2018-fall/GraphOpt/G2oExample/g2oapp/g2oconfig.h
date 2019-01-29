@@ -12,7 +12,7 @@ enum class SolverType
 
 enum class BlockType
 {
-    VAR,
+    Var,
     SE3,
     Sim3,
     SE2,
@@ -26,7 +26,8 @@ enum class AlgorithmType
 
 enum class GraphExample
 {
-    SE3Loop,
+    SE3Only,
+    SE3Point,
 };
 
 struct G2oConfig

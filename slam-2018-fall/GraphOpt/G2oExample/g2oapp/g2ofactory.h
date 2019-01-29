@@ -17,6 +17,7 @@
 
 #include "g2oconfig.h"
 #include "se3loopconstructor.h"
+#include "posepoint3dconstructor.h"
 
 class G2oFactory
 {
@@ -31,8 +32,10 @@ class G2oFactory
 public:
     static GraphConstructor* graphFactory(G2oConfig& config)
     {
-        if(config.example == GraphExample::SE3Loop)
+        if(config.example == GraphExample::SE3Only)
             return new SE3LoopConstructor;
+        else if(config.example == GraphExample::SE3Point)
+            return new PosePoint3DConstructor;
         else
             nullptr;
     }
@@ -40,7 +43,7 @@ public:
     static g2o::SparseOptimizer* optimizerFactory(G2oConfig& options)
     {
         g2o::OptimizationAlgorithm* algorithm;
-        if(options.block_type == BlockType::VAR)
+        if(options.block_type == BlockType::Var)
         {
             auto block_solver = solverFactory<BS_Var,
                                               BS_Var::LinearSolverType,

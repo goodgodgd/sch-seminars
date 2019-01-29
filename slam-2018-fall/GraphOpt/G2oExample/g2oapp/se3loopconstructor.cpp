@@ -78,8 +78,9 @@ void SE3LoopConstructor::setEdgesBtwPoses()
 
     // the last pose supposed to be the same as gt_poses[1]
     relpose = gt_poses[1].inverse() * gt_poses.back();
-    std::cout << "relpose between 0 and last:" << std::endl
-              << relpose.to_homogeneous_matrix() << std::endl;
+    std::cout << "[setEdgesBtwPoses] loop closing between 0 and last:" << std::endl
+              << "  t=" << relpose.translation().transpose()
+              << ", r=" << relpose.rotation().coeffs().transpose() << std::endl;
     if(config.edge_noise)
         relpose = addNoisePoseMeasurement(relpose);
     addEdgePosePose(1, int(gt_poses.size()-1), relpose);

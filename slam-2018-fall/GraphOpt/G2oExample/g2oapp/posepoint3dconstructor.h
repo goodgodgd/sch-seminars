@@ -3,7 +3,6 @@
 
 #include <math.h>
 #include "se3loopconstructor.h"
-#include "g2o/types/sba/types_six_dof_expmap.h"
 
 class PosePoint3DConstructor: public SE3LoopConstructor
 {

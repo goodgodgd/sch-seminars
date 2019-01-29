@@ -5,9 +5,9 @@ int main()
 {
     G2oConfig options;
     options.sovler_type = SolverType::CHOLMOD;
-    options.block_type = BlockType::SE3;
+    options.block_type = BlockType::Var;
     options.algorithm = AlgorithmType::Levenberg;
-    options.example = GraphExample::SE3Loop;
+    options.example = GraphExample::SE3Point;
     options.verbosity = true;
     options.edge_noise = true;
     options.tran_noise = Eigen::Vector3d(0.01, 0.01, 0.01);

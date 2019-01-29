@@ -50,6 +50,6 @@ HEADERS += \
     g2oapp/graphconstructor.h \
     g2oapp/se3loopconstructor.h \
     g2oapp/g2oconfig.h \
-    g2oapp/g2oall.h \
     g2oapp/posepoint3dconstructor.h \
-    g2oapp/slam3dconstructor.h
+    g2oapp/slam3dconstructor.h \
+    g2oapp/stream_operators.h
